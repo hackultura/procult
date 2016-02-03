@@ -1,0 +1,9 @@
+dj-database-url==0.3.0
+Django==1.8.5
+django-localflavor==1.2
+django-rest-localflavor==1.2.2
+djangorestframework==3.3.2
+wheel==0.24.0
+psycopg2==2.6.1
+django-model-utils==2.4
+django-extensions==1.6.1
