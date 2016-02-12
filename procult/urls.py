@@ -8,10 +8,12 @@ from procult.authentication.views import (
     UserViewSet,
     ProposalViewSet,
     LoginView,
+    ChangePasswordView,
     ProposalView,
     ProposalUploadFilesView,
     ProposalUploadFilesDetailView,
     ProposalDetailView,
+    ProposalAnalisysDetailView,
     ProposalOwnListView
 )
 
@@ -21,10 +23,14 @@ router.register(r'api/v1/usuarios', UserViewSet)
 urlpatterns = router.urls
 
 urlpatterns += [
-    url(r'^api/v1/auth/login/$', LoginView.as_view(), name='login'),
+    url(r'^api/v1/auth/login/$', LoginView.as_view()),
+    url(r'^api/v1/auth/password/change/(?P<user_pk>\d+)/$',
+        ChangePasswordView.as_view()),
     url(r'^api/v1/propostas/$', ProposalView.as_view()),
     url(r'^api/v1/propostas/(?P<number>\d+)/$',
         ProposalDetailView.as_view()),
+    url(r'^api/v1/propostas/(?P<number>\d+)/(?P<status>\w+)/$',
+        ProposalAnalisysDetailView.as_view()),
     url(r'^api/v1/propostas/(?P<number>\d+)/upload/$',
         ProposalUploadFilesView.as_view()),
     url(r'^api/v1/propostas/documentos/(?P<uid>[a-zA-Z0-9\-]+)/$',

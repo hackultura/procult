@@ -8,7 +8,9 @@ from rest_framework.generics import (
 )
 from procult.authentication.models import User
 from procult.authentication.permissions import IsOwner
-from procult.authentication.serializers import UserSerializer, LoginSerializer
+from procult.authentication.serializers import (
+    UserSerializer, LoginSerializer, ChangePasswordSerializer
+)
 from procult.core.models import Proposal, AttachmentProposal
 from procult.core.serializers import (
     ProposalSerializer, ProposalUploadSerializer
@@ -49,11 +51,11 @@ class ProposalViewSet(ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIVie
         if self.request.method in permissions.SAFE_METHODS:
             return (permissions.AllowAny(),)
 
-        # TODO: Remover depois dos testes
-        if self.request.method == 'POST':
-            return (permissions.AllowAny(),)
+        # FIXME: Implementar uma melhor verificacao de autenticacao, e
+        # depois substituir por isso.
+        # return (permissions.IsAuthenticated(), IsOwner(),)
 
-        return (permissions.IsAuthenticated(), IsOwner(),)
+        return (permissions.AllowAny(),)
 
 
 class ProposalView(views.APIView):
@@ -111,6 +113,7 @@ class ProposalDetailView(views.APIView):
         return Response(serializer.data)
 
     def put(self, request, number):
+        import ipdb; ipdb.set_trace()
         proposal = Proposal.objects.get(number=number)
         serializer = ProposalSerializer(proposal, data=request.data,
                                         context={'request': request})
@@ -125,6 +128,14 @@ class ProposalDetailView(views.APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class ProposalAnalisysDetailView(views.APIView):
+    def put(self, request, number, status):
+        proposal = Proposal.objects.get(number=number)
+        proposal.status = status
+        proposal.save()
+        return Response(status=status.HTTP_200_OK)
+
+
 class ProposalOwnListView(views.APIView):
     def get(self, request, user_pk):
         user = User.objects.get(pk=user_pk)
@@ -133,6 +144,17 @@ class ProposalOwnListView(views.APIView):
                                         context={'request': request},
                                         many=True)
         return Response(serializer.data)
+
+
+class ChangePasswordView(views.APIView):
+    def post(self, request, user_pk, format=None):
+        import ipdb; ipdb.set_trace()
+        user = User.objects.get(pk=user_pk)
+        serializer = ChangePasswordSerializer(user, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
 
 
 class LoginView(views.APIView):

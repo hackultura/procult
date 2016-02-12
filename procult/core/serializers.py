@@ -34,8 +34,10 @@ class ProposalUploadSerializer(serializers.ModelSerializer):
 class ProposalSerializer(serializers.ModelSerializer):
     attachments = ProposalUploadSerializer(many=True, read_only=True)
     status = serializers.CharField(write_only=True)
-    status = serializers.CharField(source='status_display', read_only=True)
+    status_display = serializers.CharField(read_only=True)
     class Meta:
         model = Proposal
-        fields = ('user', 'title', 'number', 'status', 'created_at', 'attachments',)
-        read_only_fields = ('number', 'created_at', 'attachments',)
+        fields = ('user', 'title', 'number', 'status', 'created_at',
+                  'attachments', 'status_display',)
+        read_only_fields = ('number', 'created_at', 'attachments',
+                            'status_display',)
