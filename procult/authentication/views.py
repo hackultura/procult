@@ -113,7 +113,6 @@ class ProposalDetailView(views.APIView):
         return Response(serializer.data)
 
     def put(self, request, number):
-        import ipdb; ipdb.set_trace()
         proposal = Proposal.objects.get(number=number)
         serializer = ProposalSerializer(proposal, data=request.data,
                                         context={'request': request})
