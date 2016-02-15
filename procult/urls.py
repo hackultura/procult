@@ -29,8 +29,6 @@ urlpatterns += [
     url(r'^api/v1/propostas/$', ProposalView.as_view()),
     url(r'^api/v1/propostas/(?P<number>\d+)/$',
         ProposalDetailView.as_view()),
-    url(r'^api/v1/propostas/(?P<number>\d+)/(?P<status>\w+)/$',
-        ProposalAnalisysDetailView.as_view()),
     url(r'^api/v1/propostas/(?P<number>\d+)/upload/$',
         ProposalUploadFilesView.as_view()),
     url(r'^api/v1/propostas/documentos/(?P<uid>[a-zA-Z0-9\-]+)/$',

@@ -147,7 +147,6 @@ class ProposalOwnListView(views.APIView):
 
 class ChangePasswordView(views.APIView):
     def post(self, request, user_pk, format=None):
-        import ipdb; ipdb.set_trace()
         user = User.objects.get(pk=user_pk)
         serializer = ChangePasswordSerializer(user, data=request.data)
 
