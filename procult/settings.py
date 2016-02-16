@@ -142,25 +142,24 @@ if not settings.DEBUG:
 
 # Local configuration
 # TODO: Separate in multiple settings
-if settings.DEBUG:
-    INSTALLED_APPS += (
-        'corsheaders',
-    )
-
-    MIDDLEWARE_CLASSES = (
-        'corsheaders.middleware.CorsMiddleware',
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'django.middleware.common.CommonMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-        'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        'django.middleware.security.SecurityMiddleware',
-    )
-
-    # Define CORS to allow client in development mode
-    CORS_ORIGIN_WHITELIST = (
-        'http://localhost:5000'
-    )
+# INSTALLED_APPS += (
+#     'corsheaders',
+# )
+#
+#     MIDDLEWARE_CLASSES = (
+#         'corsheaders.middleware.CorsMiddleware',
+#         'django.contrib.sessions.middleware.SessionMiddleware',
+#         'django.middleware.common.CommonMiddleware',
+#         'django.middleware.csrf.CsrfViewMiddleware',
+#         'django.contrib.auth.middleware.AuthenticationMiddleware',
+#         'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+#         'django.contrib.messages.middleware.MessageMiddleware',
+#         'django.middleware.clickjacking.XFrameOptionsMiddleware',
+#         'django.middleware.security.SecurityMiddleware',
+#     )
+#
+#     # Define CORS to allow client in development mode
+#     CORS_ORIGIN_WHITELIST = (
+#         'http://localhost:5000'
+#     )
 
