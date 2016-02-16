@@ -92,8 +92,8 @@ WSGI_APPLICATION = 'procult.wsgi.application'
 
 # https://pypi.python.org/pypi/dj-database-url
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgres://procult:123456@localhost/procult_app'
+    'default': dj_database_url.parse(
+        'postgres://procult:123456@localhost/procult'
     )
 }
 
