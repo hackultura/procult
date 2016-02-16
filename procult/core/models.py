@@ -8,6 +8,7 @@ from random import randint
 from django.conf import settings
 from django.db import models
 from model_utils import Choices
+from .utils import normalize_text
 
 
 def _generate_proposalnumber():
@@ -16,7 +17,7 @@ def _generate_proposalnumber():
 def _attachment_filepath(instance, filename):
   cpf = re.sub(r'\W', '_', instance.proposal.user.cpf)
   proposal = instance.proposal.number
-  filename = re.sub(r'\s', '_', filename)
+  filename = normalize_text(filename)
   path = "propostas/{cpf}/{proposal}/{filename}".format(
       cpf=cpf,
       proposal=proposal,
