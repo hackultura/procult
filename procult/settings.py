@@ -167,8 +167,7 @@ if not settings.DEBUG:
 #         'http://localhost:5000'
 #     )
 RAVEN_CONFIG = {
-        'dsn':
-        os.getenv('RAVEN_DSN_URL')
+        'dsn': os.getenv('RAVEN_DSN_URL'),
         # If you are using git, you can also automatically configure the
         # release based on the git info.
         'release': raven.fetch_git_sha(BASE_DIR),
