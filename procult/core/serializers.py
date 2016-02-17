@@ -33,7 +33,7 @@ class ProposalUploadSerializer(serializers.ModelSerializer):
 
 class ProposalSerializer(serializers.ModelSerializer):
     attachments = ProposalUploadSerializer(many=True, read_only=True)
-    status = serializers.CharField(write_only=True)
+    status = serializers.CharField()
     status_display = serializers.CharField(read_only=True)
     class Meta:
         model = Proposal

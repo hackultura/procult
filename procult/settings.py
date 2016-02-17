@@ -146,26 +146,27 @@ if not settings.DEBUG:
 
 # Local configuration
 # TODO: Separate in multiple settings
-# INSTALLED_APPS += (
-#     'corsheaders',
-# )
-#
-#     MIDDLEWARE_CLASSES = (
-#         'corsheaders.middleware.CorsMiddleware',
-#         'django.contrib.sessions.middleware.SessionMiddleware',
-#         'django.middleware.common.CommonMiddleware',
-#         'django.middleware.csrf.CsrfViewMiddleware',
-#         'django.contrib.auth.middleware.AuthenticationMiddleware',
-#         'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-#         'django.contrib.messages.middleware.MessageMiddleware',
-#         'django.middleware.clickjacking.XFrameOptionsMiddleware',
-#         'django.middleware.security.SecurityMiddleware',
-#     )
-#
-#     # Define CORS to allow client in development mode
-#     CORS_ORIGIN_WHITELIST = (
-#         'http://localhost:5000'
-#     )
+if settings.DEBUG:
+    INSTALLED_APPS += (
+        'corsheaders',
+    )
+
+    MIDDLEWARE_CLASSES = (
+        'corsheaders.middleware.CorsMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'django.middleware.security.SecurityMiddleware',
+    )
+
+    # Define CORS to allow client in development mode
+    CORS_ORIGIN_WHITELIST = (
+        'http://localhost:5000'
+    )
 RAVEN_CONFIG = {
         'dsn': os.getenv('RAVEN_DSN_URL'),
         # If you are using git, you can also automatically configure the

@@ -3,13 +3,15 @@
 import re
 import uuid
 import os
+import shutil
 from random import randint
 
+from django.dispatch.dispatcher import receiver
 from django.conf import settings
 from django.db import models
 from model_utils import Choices
 from .utils import normalize_text
-
+from .signals import remove_proposal_file, remove_proposal_folder
 
 def _generate_proposalnumber():
     return randint(1, 99999)
@@ -59,14 +61,37 @@ class Proposal(models.Model):
     def status_display(self):
         return Proposal.STATUS_CHOICES[self.status]
 
+    def delete(self, *args, **kwargs):
+        remove_proposal_folder.send(sender=self.__class__,
+                                    instance=self,
+                                    user=self.user)
+        super(Proposal, self).delete(*args, **kwargs)
+
 
 class AttachmentProposal(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, editable=False)
-    proposal = models.ForeignKey('Proposal', related_name='attachments')
+    proposal = models.ForeignKey('Proposal', on_delete=models.CASCADE,
+                                 related_name='attachments')
     file = models.FileField(upload_to=_attachment_filepath)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def delete(self, *args, **kwargs):
-        os.remove(os.path.join(settings.MEDIA_ROOT, self.file.name))
+        remove_proposal_file.send(sender=self.__class__, instance=self)
         super(AttachmentProposal, self).delete(*args, **kwargs)
+
+
+# Signals
+@receiver(remove_proposal_file)
+def delete_proposal_file(sender, instance, **kwargs):
+    file_path = os.path.join(settings.MEDIA_ROOT, instance.file.name)
+    if os.path.exists(file_path):
+        os.remove(os.path.join(settings.MEDIA_ROOT, instance.file.name))
+
+
+@receiver(remove_proposal_folder)
+def delete_proposal_folder(sender, instance, user, **kwargs):
+    number = str(instance.number)
+    cpf = re.sub(r'\W', '_', user.cpf)
+    path = "propostas/{0}/{1}".format(cpf, number)
+    shutil.rmtree(os.path.join(settings.MEDIA_ROOT, path))
