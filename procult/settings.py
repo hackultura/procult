@@ -17,6 +17,8 @@ import dj_database_url
 
 from django.conf import settings
 
+import raven
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -44,6 +46,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'raven.contrib.django.raven_compat',
 
     'rest_framework',
     'rest_localflavor',
@@ -92,8 +96,8 @@ WSGI_APPLICATION = 'procult.wsgi.application'
 
 # https://pypi.python.org/pypi/dj-database-url
 DATABASES = {
-    'default': dj_database_url.parse(
-        'postgres://procult:123456@localhost/procult'
+    'default': dj_database_url.config(
+        default='postgres://procult:123456@localhost/procult'
     )
 }
 
@@ -162,4 +166,11 @@ if not settings.DEBUG:
 #     CORS_ORIGIN_WHITELIST = (
 #         'http://localhost:5000'
 #     )
+RAVEN_CONFIG = {
+        'dsn':
+        os.getenv('RAVEN_DSN_URL')
+        # If you are using git, you can also automatically configure the
+        # release based on the git info.
+        'release': raven.fetch_git_sha(os.path.dirname(__file__)),
 
+}
