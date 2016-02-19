@@ -4,11 +4,13 @@ import re
 import uuid
 import os
 import shutil
+import hashlib
 from random import randint
 
 from django.dispatch.dispatcher import receiver
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import pre_save
 from model_utils import Choices
 from .utils import normalize_text
 from .signals import remove_proposal_file, remove_proposal_folder
@@ -73,6 +75,7 @@ class AttachmentProposal(models.Model):
     proposal = models.ForeignKey('Proposal', on_delete=models.CASCADE,
                                  related_name='attachments')
     file = models.FileField(upload_to=_attachment_filepath)
+    checksum = models.CharField(max_length=80)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -82,6 +85,11 @@ class AttachmentProposal(models.Model):
 
 
 # Signals
+@receiver(pre_save, sender=AttachmentProposal)
+def generate_checksum(sender, instance, **kwargs):
+    instance.checksum = hashlib.md5(instance.file.read()).hexdigest()
+
+
 @receiver(remove_proposal_file)
 def delete_proposal_file(sender, instance, **kwargs):
     file_path = os.path.join(settings.MEDIA_ROOT, instance.file.name)
