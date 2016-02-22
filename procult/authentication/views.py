@@ -19,7 +19,7 @@ from procult.core.serializers import (
 
 class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'
-    queryset = User.entes.all()
+    queryset = User.objects.all()
     serializer_class = UserSerializer
 
     def get_permissions(self):

@@ -11,12 +11,6 @@ class User(AbstractBaseUser):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=80, blank=False)
     slug = AutoSlugField(populate_from='name', overwrite=True)
-    cpf = models.CharField(max_length=15, blank=True)
-    cnpj = models.CharField(max_length=20, blank=True)
-    ceac = models.PositiveSmallIntegerField(
-        blank=False,
-        validators=[MaxValueValidator(9999)]
-    )
 
     is_admin = models.BooleanField(default=False)
 
@@ -37,3 +31,18 @@ class User(AbstractBaseUser):
 
     def get_short_name(self):
         return self.name.split(' ')[0]
+
+
+class Ente(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    cpf = models.CharField(max_length=15, blank=True)
+    cnpj = models.CharField(max_length=20, blank=True)
+    ceac = models.PositiveSmallIntegerField(
+        blank=False,
+        validators=[MaxValueValidator(9999)]
+    )
+
+    objects = EntesManager()
+
+    def __str__(self):
+        return "{cpf}: {name}".format(cpf=self.cpf, name=self.user.name)

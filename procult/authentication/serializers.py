@@ -3,28 +3,43 @@
 from django.contrib.auth import update_session_auth_hash
 from rest_framework import serializers
 from rest_localflavor.br.serializers import BRCPFField, BRCNPJField
-from .models import User
+from .models import User, Ente
+
+
+class EnteSerializer(serializers.ModelSerializer):
+    cpf = BRCPFField(allow_blank=True)
+    cnpj = BRCNPJField(allow_blank=True)
+
+    class Meta:
+        model = Ente
+        fields = ('ceac', 'cpf', 'cnpj',)
+
+    def validate(self, data):
+        if data['cpf'] in ['', None] and data['cnpj'] in ['', None]:
+            raise serializers.ValidationError("Número do seu documento é obrigatório")
+        return data
 
 
 class UserSerializer(serializers.ModelSerializer):
-    cpf = BRCPFField(allow_blank=True)
-    cnpj = BRCNPJField(allow_blank=True)
+    ente = EnteSerializer(required=False)
     password1 = serializers.CharField(write_only=True, required=False)
     password2 = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'name', 'cpf', 'cnpj', 'ceac',
+        fields = ('id', 'email', 'name', 'ente',
                   'password1', 'password2', 'is_admin',)
-        read_only_fields = ('created_at', 'updated_at', 'is_admin')
+        read_only_fields = ('created_at', 'updated_at',)
 
     def validate(self, data):
-        if data['cpf'] in ['', None] and data['cnpj'] in ['', None]:
-            raise serializers.ValidationError("Número do seu documento é obrigatório")
-
+        is_admin = data.get('is_admin', False)
+        ente = data.get('ente')
+        if not ente and not is_admin:
+            raise serializers.ValidationError("Os dados dos entes são obrigatórios")
         return data
 
     def create(self, validated_data):
+        ente = validated_data.pop('ente', None)
         password1 = validated_data.pop('password1', None)
         password2 = validated_data.pop('password2', None)
 
@@ -37,13 +52,13 @@ class UserSerializer(serializers.ModelSerializer):
                 "As senhas não se batem. Digite novamente"
             )
 
+        if ente:
+            Ente.objects.create(user=user, **ente)
+
         return user
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
-        instance.cpf = validated_data.get('cpf', instance.cpf)
-        instance.cnpj = validated_data.get('cnpj', instance.cnpj)
-        instance.ceac = validated_data.get('ceac', instance.ceac)
 
         instance.save()
 
