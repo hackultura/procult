@@ -66,7 +66,7 @@ class Proposal(models.Model):
     def delete(self, *args, **kwargs):
         remove_proposal_folder.send(sender=self.__class__,
                                     instance=self,
-                                    user=self.user)
+                                    ente=self.ente)
         super(Proposal, self).delete(*args, **kwargs)
 
 
@@ -98,7 +98,7 @@ def delete_proposal_file(sender, instance, **kwargs):
 
 
 @receiver(remove_proposal_folder)
-def delete_proposal_folder(sender, instance, user, **kwargs):
+def delete_proposal_folder(sender, instance, ente, **kwargs):
     number = str(instance.number)
     cpf = re.sub(r'\W', '_', ente.cpf)
     path = "propostas/{0}/{1}".format(cpf, number)
