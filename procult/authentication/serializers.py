@@ -12,7 +12,7 @@ class EnteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ente
-        fields = ('ceac', 'cpf', 'cnpj',)
+        fields = ('id', 'ceac', 'cpf', 'cnpj',)
 
     def validate(self, data):
         if data['cpf'] in ['', None] and data['cnpj'] in ['', None]:
