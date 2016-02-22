@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+import bitmath
 
 from django.core.files.uploadedfile import UploadedFile
 from rest_framework import serializers
@@ -12,10 +13,11 @@ class ProposalUploadSerializer(serializers.ModelSerializer):
     file = serializers.FileField(max_length=255, write_only=True)
     file = serializers.SerializerMethodField()
     filename = serializers.SerializerMethodField()
+    size = serializers.SerializerMethodField()
     class Meta:
         model = AttachmentProposal
-        fields = ('file', 'uid', 'checksum', 'filename',)
-        read_only_fields = ('uuid', 'file', 'created_at',
+        fields = ('file', 'uid', 'checksum', 'filename', 'size',)
+        read_only_fields = ('uuid', 'file', 'created_at', 'size',
                             'updated_at', 'checksum', 'filename',)
 
     def create(self, validated_data):
@@ -37,6 +39,10 @@ class ProposalUploadSerializer(serializers.ModelSerializer):
     def get_filename(self, obj):
         filename = obj.file.name.split('/')[-1]
         return re.sub('\_', ' ', filename)
+
+    def get_size(self, obj):
+        return bitmath.Byte(obj.file.size).best_prefix().format(
+            "{value:.2f} {unit}")
 
 
 class ProposalSerializer(serializers.ModelSerializer):
