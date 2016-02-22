@@ -19,7 +19,7 @@ def _generate_proposalnumber():
     return randint(1, 99999)
 
 def _attachment_filepath(instance, filename):
-  cpf = re.sub(r'\W', '_', instance.proposal.user.cpf)
+  cpf = re.sub(r'\W', '_', instance.proposal.ente.cpf)
   proposal = instance.proposal.number
   filename = normalize_text(filename)
   path = "propostas/{cpf}/{proposal}/{filename}".format(
@@ -39,8 +39,8 @@ class Proposal(models.Model):
         ('reproved', "Reprovado"),
     )
 
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+    ente = models.ForeignKey(
+        'authentication.Ente',
         related_name='proposals'
     )
     title = models.CharField(
@@ -100,6 +100,6 @@ def delete_proposal_file(sender, instance, **kwargs):
 @receiver(remove_proposal_folder)
 def delete_proposal_folder(sender, instance, user, **kwargs):
     number = str(instance.number)
-    cpf = re.sub(r'\W', '_', user.cpf)
+    cpf = re.sub(r'\W', '_', ente.cpf)
     path = "propostas/{0}/{1}".format(cpf, number)
     shutil.rmtree(os.path.join(settings.MEDIA_ROOT, path))

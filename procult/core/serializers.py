@@ -46,10 +46,20 @@ class ProposalSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
     class Meta:
         model = Proposal
-        fields = ('user', 'author', 'title', 'number', 'status', 'created_at',
+        fields = ('ente', 'author', 'title', 'number', 'status', 'created_at',
                   'attachments', 'status_display',)
         read_only_fields = ('number', 'created_at', 'attachments',
                             'status_display',)
 
+    def validate_ente(self, value):
+        # XXX: BREAKPOINT!!
+        import ipdb
+        ipdb.set_trace()
+        if not value.cpf and value.cnpj:
+            raise serializers.ValidationError(
+                "Não pode criar propostas com um usuário sem CPF ou CNPJ."
+            )
+        return value
+
     def get_author(self, obj):
-        return obj.user.name
+        return obj.ente.user.name

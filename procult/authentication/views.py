@@ -138,7 +138,7 @@ class ProposalAnalisysDetailView(views.APIView):
 class ProposalOwnListView(views.APIView):
     def get(self, request, user_pk):
         user = User.objects.get(pk=user_pk)
-        proposals = Proposal.objects.filter(user=user)
+        proposals = Proposal.objects.filter(ente=user.ente)
         serializer = ProposalSerializer(proposals,
                                         context={'request': request},
                                         many=True)
