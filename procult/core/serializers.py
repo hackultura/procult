@@ -52,9 +52,6 @@ class ProposalSerializer(serializers.ModelSerializer):
                             'status_display',)
 
     def validate_ente(self, value):
-        # XXX: BREAKPOINT!!
-        import ipdb
-        ipdb.set_trace()
         if not value.cpf and value.cnpj:
             raise serializers.ValidationError(
                 "Não pode criar propostas com um usuário sem CPF ou CNPJ."
