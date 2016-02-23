@@ -4,6 +4,7 @@ import re
 import bitmath
 
 from django.core.files.uploadedfile import UploadedFile
+from django.conf import settings
 from rest_framework import serializers
 from .models import Proposal, AttachmentProposal
 
@@ -20,8 +21,16 @@ class ProposalUploadSerializer(serializers.ModelSerializer):
         read_only_fields = ('uuid', 'file', 'created_at', 'size',
                             'updated_at', 'checksum', 'filename',)
 
+    def _validate_file(self, file):
+        if file in [None, '']:
+            raise serializers.ValidationError("Ocorreu um erro no upload. Tente novamente")
+        elif file.content_type not in settings.ALLOWED_FILES:
+            raise serializers.ValidationError("Formato de arquivo inválido para o projeto.")
+        return True
+
     def create(self, validated_data):
-        attachment = AttachmentProposal.objects.create(**validated_data)
+        if self._validate_file(validated_data.get('file')):
+            attachment = AttachmentProposal.objects.create(**validated_data)
         return attachment
 
     def get_file(self, obj):
