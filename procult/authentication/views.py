@@ -61,7 +61,8 @@ class ProposalViewSet(ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIVie
 class ProposalView(views.APIView):
 
     def get(self, request):
-        proposals = Proposal.objects.all()
+        proposals = Proposal.objects.exclude(
+            status=Proposal.STATUS_CHOICES.draft)
         serializer = ProposalSerializer(proposals,
                                         context={'request': request},
                                         many=True)

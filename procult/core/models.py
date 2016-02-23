@@ -34,6 +34,7 @@ class Proposal(models.Model):
     STATUS_CHOICES = Choices(
         ('draft', "Rascunho"),
         ('sended', "Enviado"),
+        ('canceled', "Cancelado"),
         ('analysis', "Em Análise"),
         ('approved', "Aprovado"),
         ('reproved', "Reprovado"),
