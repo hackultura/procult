@@ -58,20 +58,28 @@ class ProposalSerializer(serializers.ModelSerializer):
     attachments = ProposalUploadSerializer(many=True, read_only=True)
     status = serializers.CharField()
     status_display = serializers.CharField(read_only=True)
-    author = serializers.SerializerMethodField()
+    ente_info = serializers.SerializerMethodField()
     class Meta:
         model = Proposal
-        fields = ('ente', 'author', 'title', 'number', 'status', 'created_at',
+        fields = ('ente', 'ente_info', 'title', 'number', 'status', 'created_at',
                   'attachments', 'status_display',)
         read_only_fields = ('number', 'created_at', 'attachments',
-                            'status_display',)
+                            'status_display', 'ente_detail',)
 
     def validate_ente(self, value):
-        if not value.cpf and value.cnpj:
+        if not value.cpf and not value.cnpj:
             raise serializers.ValidationError(
                 "Não pode criar propostas com um usuário sem CPF ou CNPJ."
             )
         return value
 
-    def get_author(self, obj):
-        return obj.ente.user.name
+    def get_ente_info(self, obj):
+        ente = {
+            'author': obj.ente.user.name,
+            'ceac': obj.ente.ceac
+        }
+        if obj.ente.cpf not in [None, '']:
+            ente['cpf'] = obj.ente.cpf
+        else:
+            ente['cnpj'] = obj.ente.cnpj
+        return ente

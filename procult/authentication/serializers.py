@@ -9,15 +9,18 @@ from .models import User, Ente
 class EnteSerializer(serializers.ModelSerializer):
     cpf = BRCPFField(allow_blank=True)
     cnpj = BRCNPJField(allow_blank=True)
-
+    projects_total = serializers.SerializerMethodField()
     class Meta:
         model = Ente
-        fields = ('id', 'ceac', 'cpf', 'cnpj',)
+        fields = ('id', 'ceac', 'cpf', 'cnpj', 'projects_total',)
 
     def validate(self, data):
         if data['cpf'] in ['', None] and data['cnpj'] in ['', None]:
             raise serializers.ValidationError("Número do seu documento é obrigatório")
         return data
+
+    def get_projects_total(self, obj):
+        return obj.proposals.count()
 
 
 class UserSerializer(serializers.ModelSerializer):
