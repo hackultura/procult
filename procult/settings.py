@@ -160,15 +160,24 @@ ALLOWED_FILES = [
     'audio/midi',
     'audio/x-mid',
     'audio/x-midi',
-    'video/mpeg',
-    'video/x-mpeg',
     'application/x-troff-msvideo',
     'application/vnd.rn-realmedia',
+    'video/mp4',
+    'video/mpeg',
+    'video/ogg',
+    'video/x-mpeg',
     'video/avi',
     'video/msvideo',
     'video/x-msvideo',
     'video/x-dv',
     'video/quicktime'
+    'video/H261',
+    'video/H263',
+    'video/H263-1998',
+    'video/H263-2000',
+    'video/H264',
+    'video/H264-RCDO',
+    'video/H264-SVC '
 ]
 
 # Django Rest Framework
