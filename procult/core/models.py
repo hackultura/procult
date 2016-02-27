@@ -60,6 +60,9 @@ class Proposal(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     sended_at = models.DateTimeField(blank=True, null=True)
 
+    class Meta:
+        ordering = ['-created_at', '-updated_at']
+
     @property
     def status_display(self):
         return Proposal.STATUS_CHOICES[self.status]
