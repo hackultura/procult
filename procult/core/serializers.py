@@ -61,7 +61,7 @@ class ProposalSerializer(serializers.ModelSerializer):
     ente_info = serializers.SerializerMethodField()
     class Meta:
         model = Proposal
-        fields = ('ente', 'ente_info', 'title', 'number', 'status', 'created_at',
+        fields = ('ente', 'ente_info', 'title', 'id', 'number', 'status', 'created_at',
                   'attachments', 'status_display',)
         read_only_fields = ('number', 'created_at', 'attachments',
                             'status_display', 'ente_detail',)
