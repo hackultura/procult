@@ -216,9 +216,14 @@ if settings.DEBUG:
         'django.middleware.security.SecurityMiddleware',
     )
 
+
+    CORS_ORIGIN_ALLOW_ALL = os.getenv('DEBUG', False)
+
     # Define CORS to allow client in development mode
     CORS_ORIGIN_WHITELIST = (
-        'http://localhost:5000'
+        'localhost:5000',
+        'procult.local:5000',
+        '0.0.0.0:5000',
     )
 RAVEN_CONFIG = {
         'dsn': os.getenv('RAVEN_DSN_URL'),
