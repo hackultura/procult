@@ -13,6 +13,7 @@ from procult.authentication.views import (
     ProposalUploadFilesView,
     ProposalUploadFilesDetailView,
     ProposalDetailView,
+    ProposalDashboardView,
     ProposalAnalisysDetailView,
     ProposalOwnListView
 )
@@ -35,6 +36,7 @@ urlpatterns += [
         ProposalUploadFilesDetailView.as_view()),
     url(r'^api/v1/propostas/user/(?P<user_pk>\d+)/$',
         ProposalOwnListView.as_view()),
+    url(r'^api/v1/propostas/dashboard/$', ProposalDashboardView.as_view()),
 ]
 
 if settings.DEBUG:

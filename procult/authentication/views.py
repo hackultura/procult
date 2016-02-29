@@ -13,7 +13,8 @@ from procult.authentication.serializers import (
 )
 from procult.core.models import Proposal, AttachmentProposal
 from procult.core.serializers import (
-    ProposalSerializer, ProposalUploadSerializer
+    ProposalSerializer, ProposalUploadSerializer,
+    ProposalLastSendedSerializer, ProposalLastAnalyzedSerializer
 )
 
 
@@ -56,6 +57,27 @@ class ProposalViewSet(ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIVie
         # return (permissions.IsAuthenticated(), IsOwner(),)
 
         return (permissions.AllowAny(),)
+
+
+class ProposalDashboardView(views.APIView):
+    def get(self, request):
+        last_sended = ProposalLastSendedSerializer(
+            Proposal.objects.last_sended(),
+            many=True
+        )
+        last_analyzed = ProposalLastAnalyzedSerializer(
+            Proposal.objects.last_analyzed(),
+            many=True
+        )
+        data = {
+            'sended': Proposal.objects.sended().count(),
+            'approved': Proposal.objects.approved().count(),
+            'reproved': Proposal.objects.reproved().count(),
+            'canceled': Proposal.objects.canceled().count(),
+            'last_sended': last_sended.data,
+            'last_analyzed': last_analyzed.data
+        }
+        return Response(data)
 
 
 class ProposalView(views.APIView):

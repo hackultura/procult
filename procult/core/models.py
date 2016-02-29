@@ -14,6 +14,7 @@ from django.db.models.signals import pre_save
 from model_utils import Choices
 from .utils import normalize_text
 from .signals import remove_proposal_file, remove_proposal_folder
+from .managers import ProposalManager
 
 def _generate_proposalnumber():
     return randint(1, 99999)
@@ -59,6 +60,8 @@ class Proposal(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     sended_at = models.DateTimeField(blank=True, null=True)
+
+    objects = ProposalManager()
 
     class Meta:
         ordering = ['-created_at', '-updated_at']
