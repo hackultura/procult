@@ -182,16 +182,17 @@ ALLOWED_FILES = [
 
 # Django Rest Framework
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
-        'procult.core.renderers.UnicodeJSONRenderer',
-    ),
     'DATE_FORMAT': "%d/%m/%Y",
-    'DATE_INPUT_FORMATS':["%d/%m/%Y", "%d/%m/%y"]
+    'DATE_INPUT_FORMATS':["%d/%m/%Y", "%d/%m/%y"],
+    'PAGE_SIZE': 20
 }
 
 # Desabilitando o friendly browser view do Django Rest Framework
 if not settings.DEBUG:
     REST_FRAMEWORK.update({
+        'DEFAULT_RENDERER_CLASSES': (
+            'procult.core.renderers.UnicodeJSONRenderer',
+        ),
         'DEFAULT_PARSER_CLASSES': (
             'rest_framework.parsers.JSONParser',
         )

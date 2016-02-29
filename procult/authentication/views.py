@@ -3,8 +3,9 @@ from django.contrib.auth import authenticate, login
 from rest_framework import permissions, viewsets, status, views
 from rest_framework.response import Response
 from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import (
-    ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+    CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 )
 from procult.authentication.models import User
 from procult.authentication.permissions import IsOwner
@@ -80,15 +81,9 @@ class ProposalDashboardView(views.APIView):
         return Response(data)
 
 
-class ProposalView(views.APIView):
-
-    def get(self, request):
-        proposals = Proposal.objects.exclude(
-            status=Proposal.STATUS_CHOICES.draft)
-        serializer = ProposalSerializer(proposals,
-                                        context={'request': request},
-                                        many=True)
-        return Response(serializer.data)
+class ProposalView(ListAPIView, CreateAPIView):
+    queryset = Proposal.objects.exclude(status=Proposal.STATUS_CHOICES.draft)
+    serializer_class = ProposalSerializer
 
     def post(self, request):
         serializer = ProposalSerializer(data=request.data)
