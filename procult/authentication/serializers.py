@@ -63,6 +63,17 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
 
+        ente = instance.ente
+        validated_ente = validated_data.get('ente', None)
+        if validated_ente:
+            ente.ceac = validated_ente.get('ceac', ente.ceac)
+            if validated_ente.get('cpf', None):
+                ente.cpf = validated_ente.get('cpf', None)
+
+            if validated_ente.get('cnpj', None):
+                ente.cnpj = validated_ente.get('cnpj', None)
+            ente.save()
+
         instance.save()
 
         password = validated_data.get('password1', None)
