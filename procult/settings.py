@@ -163,6 +163,7 @@ ALLOWED_FILES = [
     'audio/ogg',
     'audio/mpeg',
     'audio/mpeg3',
+    'audio/mp3',
     'audio/mp4'
     'audio/x-mpeg-3',
     'audio/voc',
