@@ -201,7 +201,8 @@ ALLOWED_FILES = [
 REST_FRAMEWORK = {
     'DATE_FORMAT': "%d/%m/%Y",
     'DATE_INPUT_FORMATS':["%d/%m/%Y", "%d/%m/%y"],
-    'PAGE_SIZE': 20
+    'PAGE_SIZE': 20,
+    'EXCEPTION_HANDLER': 'procult.core.exceptions.custom_exception_handler'
 }
 
 # Desabilitando o friendly browser view do Django Rest Framework

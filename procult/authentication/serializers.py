@@ -13,18 +13,59 @@ class EnteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ente
         fields = ('id', 'ceac', 'cpf', 'cnpj', 'projects_total',)
+        depth = 1
 
     def validate(self, data):
         if data['cpf'] in ['', None] and data['cnpj'] in ['', None]:
-            raise serializers.ValidationError("Número do seu documento é obrigatório")
+            raise serializers.ValidationError(
+                "Número do seu documento é obrigatório")
         return data
+
+    def validate_cpf(self, value):
+        if self.instance:
+            if self.instance.cpf != value:
+                if Ente.objects.is_created(cpf=value):
+                    raise serializers.ValidationError(
+                        "Esse CPF já foi usado no sistema.")
+        if value:
+            if Ente.objects.is_created(cpf=value):
+                raise serializers.ValidationError(
+                    "Esse CPF já foi usado no sistema.")
+        return value
+
+    def validate_cnpj(self, value):
+        # XXX: BREAKPOINT!!
+        import ipdb
+        ipdb.set_trace()
+        if self.instance:
+            if self.instance.cnpj != value:
+                if Ente.objects.is_created(cnpj=value):
+                    raise serializers.ValidationError(
+                        "Esse CNPJ já foi usado no sistema.")
+        if value:
+            if Ente.objects.is_created(cnpj=value):
+                raise serializers.ValidationError(
+                    "Esse CNPJ já foi usado no sistema.")
+        return value
+
+    def validate_ceac(self, value):
+        if self.instance:
+            if self.instance.ceac != value:
+                if Ente.objects.is_created(ceac=value):
+                    raise serializers.ValidationError(
+                        "Esse CEAC já foi usado no sistema.")
+        if value:
+            if Ente.objects.is_created(ceac=value):
+                raise serializers.ValidationError(
+                    "Esse CEAC já foi usado no sistema.")
+        return value
 
     def get_projects_total(self, obj):
         return obj.proposals.count()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    ente = EnteSerializer(required=False)
+    ente = EnteSerializer()
     password1 = serializers.CharField(write_only=True, required=False)
     password2 = serializers.CharField(write_only=True, required=False)
 
@@ -33,6 +74,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'name', 'ente',
                   'password1', 'password2', 'is_admin',)
         read_only_fields = ('created_at', 'updated_at',)
+        depth = 1
 
     def validate(self, data):
         is_admin = data.get('is_admin', False)
@@ -46,38 +88,30 @@ class UserSerializer(serializers.ModelSerializer):
         password1 = validated_data.pop('password1', None)
         password2 = validated_data.pop('password2', None)
 
-        if password1 and password2 and password1 == password2:
-            user = User.objects.create(**validated_data)
-            user.set_password(password1)
-            user.save()
-        else:
-            raise serializers.ValidationError(
-                "As senhas não se batem. Digite novamente"
-            )
-
         if ente:
-            Ente.objects.create(user=user, **ente)
+            serializer = EnteSerializer(data=ente)
+            if serializer.is_valid():
+                if password1 and password2 and password1 == password2:
+                    user = User.objects.create(**validated_data)
+                    user.set_password(password1)
+                    user.save()
+                else:
+                    raise serializers.ValidationError(
+                        "As senhas não se batem. Digite novamente"
+                    )
+                serializer.save(user=user)
 
         return user
 
     def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-
-        ente = instance.ente
-        validated_ente = validated_data.get('ente', None)
-        if validated_ente:
-            ente.ceac = validated_ente.get('ceac', ente.ceac)
-            if validated_ente.get('cpf', None):
-                ente.cpf = validated_ente.get('cpf', None)
-
-            if validated_ente.get('cnpj', None):
-                ente.cnpj = validated_ente.get('cnpj', None)
-            ente.save()
-
-        instance.save()
-
+        ente = validated_data.pop('ente', None)
         password = validated_data.get('password1', None)
         confirm_password = validated_data.get('password2', None)
+
+        if ente:
+            ente_serializer = EnteSerializer(instance.ente, data=ente)
+            if ente_serializer.is_valid():
+                ente_serializer.save()
 
         if password and confirm_password and password == confirm_password:
             instance.set_password(password)

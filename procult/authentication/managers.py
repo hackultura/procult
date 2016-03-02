@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import operator
+from functools import reduce
+
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import BaseUserManager
 
 
@@ -44,3 +48,14 @@ class EntesManager(models.Manager):
 
     def with_cnpj(self):
         return self.exclude(cnpj__exact='')
+
+    def is_created(self, **kwargs):
+        query = []
+
+        if 'cpf' in kwargs:
+            query.append(Q(cpf=kwargs.pop('cpf', '')))
+        if 'cnpj' in kwargs:
+            query.append(Q(cnpj=kwargs.pop('cnpj', '')))
+        if 'ceac' in kwargs:
+            query.append(Q(ceac=kwargs.pop('ceac', '')))
+        return self.filter(reduce(operator.or_, query)).exists()

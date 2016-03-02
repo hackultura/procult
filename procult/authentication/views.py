@@ -24,24 +24,6 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def get_permissions(self):
-        if self.request.method in permissions.SAFE_METHODS:
-            return (permissions.AllowAny(),)
-
-        # FIXME: Implementar uma melhor verificacao de autenticacao, e
-        # depois substituir por isso.
-        # return (permissions.IsAuthenticated(), IsOwner(),)
-
-        return (permissions.AllowAny(),)
-
-    def create(self, request):
-        serializer = self.serializer_class(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ProposalViewSet(ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView):
     lookup_field = 'number'

@@ -3,6 +3,8 @@
 from django.db.models import Q
 from django.db import models
 
+DASHBOARD_PAGE_SIZE = 5
+
 class ProposalManager(models.Manager):
     def sended(self):
         return self.filter(status=self.model.STATUS_CHOICES.sended)
@@ -16,10 +18,10 @@ class ProposalManager(models.Manager):
     def canceled(self):
         return self.filter(status=self.model.STATUS_CHOICES.canceled)
 
-    def last_sended(self, size=5):
+    def last_sended(self, size=DASHBOARD_PAGE_SIZE):
         return self.sended()[:size]
 
-    def last_analyzed(self, size=5):
+    def last_analyzed(self, size=DASHBOARD_PAGE_SIZE):
         query = Q(status=self.model.STATUS_CHOICES.approved) & Q(
             status=self.model.STATUS_CHOICES.reproved)
         return self.filter(query)[:size]
