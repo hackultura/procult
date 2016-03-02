@@ -155,9 +155,6 @@ class ChangePasswordSerializer(serializers.Serializer):
 
         user_checked = instance.check_password(old_password)
 
-        # XXX: BREAKPOINT!!
-        import ipdb
-        ipdb.set_trace()
         if user_checked:
             if password1 and password2 and password1 == password2:
                 instance.set_password(password1)

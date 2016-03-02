@@ -75,8 +75,12 @@ class ProposalSerializer(serializers.ModelSerializer):
         return value
 
     def validate_status(self, value):
+        # XXX: BREAKPOINT!!
+        import ipdb
+        ipdb.set_trace()
         if value == Proposal.STATUS_CHOICES.sended:
-            self.instance.sended_at = timezone.now()
+            self.initial_data['sended_at'] = timezone.now()
+
         return value
 
     def get_ente_info(self, obj):
