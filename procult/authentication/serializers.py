@@ -50,9 +50,6 @@ class EnteSerializer(serializers.ModelSerializer):
         return value
 
     def validate_ceac(self, value):
-        # XXX: BREAKPOINT!!
-        import ipdb
-        ipdb.set_trace()
         if self.parent.instance and self.parent.instance.ente:
             if self.parent.instance.ente.ceac != value:
                 if Ente.objects.is_created(ceac=value):

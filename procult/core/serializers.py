@@ -5,6 +5,7 @@ import bitmath
 
 from django.core.files.uploadedfile import UploadedFile
 from django.conf import settings
+from django.utils import timezone
 from rest_framework import serializers
 from .models import Proposal, AttachmentProposal
 
@@ -62,7 +63,7 @@ class ProposalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Proposal
         fields = ('ente', 'ente_info', 'title', 'id', 'number', 'status', 'created_at',
-                  'attachments', 'status_display',)
+                  'attachments', 'status_display', 'sended_at',)
         read_only_fields = ('number', 'created_at', 'attachments',
                             'status_display', 'ente_detail',)
 
@@ -71,6 +72,11 @@ class ProposalSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Não pode criar propostas com um usuário sem CPF ou CNPJ."
             )
+        return value
+
+    def validate_status(self, value):
+        if value == Proposal.STATUS_CHOICES.sended:
+            self.instance.sended_at = timezone.now()
         return value
 
     def get_ente_info(self, obj):
