@@ -30,7 +30,7 @@ class EnteSerializer(serializers.ModelSerializer):
 
     def validate_cpf(self, value):
         instance = self._get_ente_instance()
-        if instance.cpf != value:
+        if instance and instance.cpf != value:
             if Ente.objects.is_created(cpf=value):
                 raise serializers.ValidationError(
                     "Esse CPF já foi usado no sistema.")
@@ -44,7 +44,7 @@ class EnteSerializer(serializers.ModelSerializer):
 
     def validate_cnpj(self, value):
         instance = self._get_ente_instance()
-        if instance.cnpj != value:
+        if instance and instance.cnpj != value:
             if Ente.objects.is_created(cnpj=value):
                 raise serializers.ValidationError(
                     "Esse CNPJ já foi usado no sistema.")
@@ -58,7 +58,7 @@ class EnteSerializer(serializers.ModelSerializer):
 
     def validate_ceac(self, value):
         instance = self._get_ente_instance()
-        if instance.ceac != value:
+        if instance and instance.ceac != value:
             if Ente.objects.is_created(ceac=value):
                 raise serializers.ValidationError(
                     "Esse CEAC já foi usado no sistema.")
@@ -155,6 +155,9 @@ class ChangePasswordSerializer(serializers.Serializer):
 
         user_checked = instance.check_password(old_password)
 
+        # XXX: BREAKPOINT!!
+        import ipdb
+        ipdb.set_trace()
         if user_checked:
             if password1 and password2 and password1 == password2:
                 instance.set_password(password1)
