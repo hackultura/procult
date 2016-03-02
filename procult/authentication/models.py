@@ -45,18 +45,5 @@ class Ente(models.Model):
 
     objects = EntesManager()
 
-    def clean(self):
-        if self.cpf in [None, ''] and self.cnpj in [None, '']:
-            raise ValidationError("É obrigatório o CPF ou CNPJ.")
-
-        if Ente.objects.filter(cpf=self.cpf).exists():
-            raise ValidationError({'cpf', "Esse CPF já foi usado no sistema."})
-
-        if Ente.objects.filter(cnpj=self.cnpj).exists():
-            raise ValidationError({'cnpj', "Esse CNPJ já foi usado no sistema."})
-
-        if Ente.objects.filter(ceac=self.ceac).exists():
-            raise ValidationError({'ceac', "Esse CEAC já foi usado no sistema."})
-
     def __str__(self):
         return "{cpf}: {name}".format(cpf=self.cpf, name=self.user.name)

@@ -9,9 +9,6 @@ def custom_exception_handler(exc, context):
     # to get the standard error response.
     response = exception_handler(exc, context)
 
-    print("Passou aqui")
-
-
     # Now add the HTTP status code to the response.
     if response is not None:
         response.data = {}
