@@ -6,6 +6,7 @@ from rest_localflavor.br.serializers import BRCPFField, BRCNPJField
 from .models import User, Ente
 
 
+# XXX: Essa validação não é a melhor solução. Precisa ser refatorado.
 class EnteSerializer(serializers.ModelSerializer):
     cpf = BRCPFField(allow_blank=True)
     cnpj = BRCNPJField(allow_blank=True)
@@ -13,7 +14,6 @@ class EnteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ente
         fields = ('id', 'ceac', 'cpf', 'cnpj', 'projects_total',)
-        depth = 1
 
     def validate(self, data):
         if data['cpf'] in ['', None] and data['cnpj'] in ['', None]:
@@ -22,11 +22,13 @@ class EnteSerializer(serializers.ModelSerializer):
         return data
 
     def validate_cpf(self, value):
-        if self.instance:
-            if self.instance.cpf != value:
+        if self.parent.instance and self.parent.instance.ente:
+            if self.parent.instance.ente.cpf != value:
                 if Ente.objects.is_created(cpf=value):
                     raise serializers.ValidationError(
                         "Esse CPF já foi usado no sistema.")
+            else:
+                return value
         if value:
             if Ente.objects.is_created(cpf=value):
                 raise serializers.ValidationError(
@@ -34,14 +36,13 @@ class EnteSerializer(serializers.ModelSerializer):
         return value
 
     def validate_cnpj(self, value):
-        # XXX: BREAKPOINT!!
-        import ipdb
-        ipdb.set_trace()
-        if self.instance:
-            if self.instance.cnpj != value:
+        if self.parent.instance and self.parent.instance.ente:
+            if self.parent.instance.ente.cnpj != value:
                 if Ente.objects.is_created(cnpj=value):
                     raise serializers.ValidationError(
                         "Esse CNPJ já foi usado no sistema.")
+            else:
+                return value
         if value:
             if Ente.objects.is_created(cnpj=value):
                 raise serializers.ValidationError(
@@ -49,11 +50,16 @@ class EnteSerializer(serializers.ModelSerializer):
         return value
 
     def validate_ceac(self, value):
-        if self.instance:
-            if self.instance.ceac != value:
+        # XXX: BREAKPOINT!!
+        import ipdb
+        ipdb.set_trace()
+        if self.parent.instance and self.parent.instance.ente:
+            if self.parent.instance.ente.ceac != value:
                 if Ente.objects.is_created(ceac=value):
                     raise serializers.ValidationError(
                         "Esse CEAC já foi usado no sistema.")
+            else:
+                return value
         if value:
             if Ente.objects.is_created(ceac=value):
                 raise serializers.ValidationError(
@@ -104,14 +110,14 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     def update(self, instance, validated_data):
-        ente = validated_data.pop('ente', None)
+        #ente = validated_data.pop('ente', None)
         password = validated_data.get('password1', None)
         confirm_password = validated_data.get('password2', None)
 
-        if ente:
-            ente_serializer = EnteSerializer(instance.ente, data=ente)
-            if ente_serializer.is_valid():
-                ente_serializer.save()
+        # if ente:
+        #     ente_serializer = EnteSerializer(instance.ente, data=ente)
+        #     if ente_serializer.is_valid():
+        #         ente_serializer.save()
 
         if password and confirm_password and password == confirm_password:
             instance.set_password(password)
