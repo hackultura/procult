@@ -153,12 +153,21 @@ class ChangePasswordSerializer(serializers.Serializer):
         if old_password in [None, '']:
             raise serializers.ValidationError("Digite sua antiga senha.")
 
-        if password1 and password2 and password1 == password2:
-            instance.set_password(password1)
-            instance.save()
+        user_checked = instance.check_password(old_password)
+
+        if user_checked:
+            if password1 and password2 and password1 == password2:
+                instance.set_password(password1)
+                instance.save()
+            else:
+                raise serializers.ValidationError(
+                    "As senhas não se batem. Digite novamente"
+                )
         else:
             raise serializers.ValidationError(
-                "As senhas não se batem. Digite novamente"
+                {
+                    'old_password': "A senha antiga é inválida. Tente novamente"
+                }
             )
 
         return instance

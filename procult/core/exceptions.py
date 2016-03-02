@@ -21,6 +21,8 @@ def custom_exception_handler(exc, context):
                 errors[field] = value[0]
             elif isinstance(value, OrderedDict):
                 _iter_errors_dict(value, errors)
+            elif isinstance(value, str):
+                errors[field] = value
 
         response.data['errors'] = errors
         response.data['status'] = response.status_code
