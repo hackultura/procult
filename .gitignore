@@ -64,3 +64,4 @@ target/
 # Others
 .env
 media/
+.ropeproject/

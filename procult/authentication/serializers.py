@@ -11,6 +11,7 @@ class EnteSerializer(serializers.ModelSerializer):
     cpf = BRCPFField(allow_blank=True)
     cnpj = BRCNPJField(allow_blank=True)
     projects_total = serializers.SerializerMethodField()
+
     class Meta:
         model = Ente
         fields = ('id', 'ceac', 'cpf', 'cnpj', 'projects_total',)
@@ -40,7 +41,6 @@ class EnteSerializer(serializers.ModelSerializer):
             if value and is_created:
                 raise serializers.ValidationError(msg)
         return value
-
 
     def validate_cnpj(self, value):
         instance = self._get_ente_instance()
@@ -87,7 +87,9 @@ class UserSerializer(serializers.ModelSerializer):
         is_admin = data.get('is_admin', False)
         ente = data.get('ente')
         if not ente and not is_admin:
-            raise serializers.ValidationError("Os dados dos entes são obrigatórios")
+            raise serializers.ValidationError(
+                {"ente": "Os dados dos entes são obrigatórios"}
+            )
         return data
 
     def create(self, validated_data):
@@ -104,7 +106,10 @@ class UserSerializer(serializers.ModelSerializer):
                     user.save()
                 else:
                     raise serializers.ValidationError(
-                        "As senhas não se batem. Digite novamente"
+                        {
+                            "password2":
+                            "As senhas não se batem. Digite novamente"
+                        }
                     )
                 serializer.save(user=user)
 
