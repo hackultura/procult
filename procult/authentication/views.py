@@ -3,12 +3,10 @@ from django.contrib.auth import authenticate, login
 from rest_framework import permissions, viewsets, status, views
 from rest_framework.response import Response
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import (
     CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 )
 from procult.authentication.models import User
-from procult.authentication.permissions import IsOwner
 from procult.authentication.serializers import (
     UserSerializer, LoginSerializer, ChangePasswordSerializer
 )
@@ -25,7 +23,8 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
-class ProposalViewSet(ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView):
+class ProposalViewSet(ListAPIView, RetrieveAPIView, UpdateAPIView,
+                      DestroyAPIView):
     lookup_field = 'number'
     queryset = Proposal.objects.all()
     serializer_class = ProposalSerializer
@@ -96,7 +95,7 @@ class ProposalUploadFilesDetailView(views.APIView):
     def get(self, request, uid):
         proposal = AttachmentProposal.objects.get(uid=uid)
         serializer = ProposalUploadSerializer(proposal,
-                                        context={'request': request})
+                                              context={'request': request})
         return Response(serializer.data)
 
     def delete(self, request, uid):
@@ -105,26 +104,10 @@ class ProposalUploadFilesDetailView(views.APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ProposalDetailView(views.APIView):
-    def get(self, request, number):
-        proposal = Proposal.objects.get(number=number)
-        serializer = ProposalSerializer(proposal,
-                                        context={'request': request})
-        return Response(serializer.data)
-
-    def put(self, request, number):
-        proposal = Proposal.objects.get(number=number)
-        serializer = ProposalSerializer(proposal, data=request.data,
-                                        context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, number):
-        proposal = Proposal.objects.get(number=number)
-        proposal.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class ProposalDetailView(RetrieveAPIView, UpdateAPIView, DestroyAPIView):
+    lookup_field = 'number'
+    queryset = Proposal.objects.all()
+    serializer_class = ProposalSerializer
 
 
 class ProposalAnalisysDetailView(views.APIView):
