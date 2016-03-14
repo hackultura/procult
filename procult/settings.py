@@ -204,8 +204,8 @@ ALLOWED_FILES = [
 # Django Rest Framework
 REST_FRAMEWORK = {
     'DATE_FORMAT': "%d/%m/%Y",
-    'DATE_INPUT_FORMATS':["%d/%m/%Y", "%d/%m/%y"],
-    'PAGE_SIZE': 20,
+    'DATE_INPUT_FORMATS': ["%d/%m/%Y", "%d/%m/%y"],
+    'PAGE_SIZE': 100,
     'EXCEPTION_HANDLER': 'procult.core.exceptions.custom_exception_handler'
 }
 
@@ -238,7 +238,6 @@ if settings.DEBUG:
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
         'django.middleware.security.SecurityMiddleware',
     )
-
 
     CORS_ORIGIN_ALLOW_ALL = os.getenv('DEBUG', False)
 
