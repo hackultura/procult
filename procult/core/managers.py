@@ -5,7 +5,11 @@ from django.db import models
 
 DASHBOARD_PAGE_SIZE = 5
 
+
 class ProposalManager(models.Manager):
+    def drafted(self):
+        return self.filter(status=self.model.STATUS_CHOICES.draft)
+
     def sended(self):
         return self.filter(status=self.model.STATUS_CHOICES.sended)
 

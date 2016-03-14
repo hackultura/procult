@@ -52,6 +52,7 @@ class ProposalDashboardView(views.APIView):
             many=True
         )
         data = {
+            'drafted': Proposal.objects.drafted().count(),
             'sended': Proposal.objects.sended().count(),
             'approved': Proposal.objects.approved().count(),
             'reproved': Proposal.objects.reproved().count(),
