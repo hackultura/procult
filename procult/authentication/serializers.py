@@ -119,6 +119,7 @@ class UserSerializer(serializers.ModelSerializer):
         ente = validated_data.pop('ente', None)
 
         instance.name = validated_data.get('name', instance.name)
+        instance.email = validated_data.get('email', instance.email)
         password = validated_data.pop('password1', None)
         confirm_password = validated_data.pop('password2', None)
         is_admin = validated_data.pop('is_admin', False)
