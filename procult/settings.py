@@ -181,7 +181,7 @@ ALLOWED_FILES = [
     'application/mp4',
     'application/x-troff-msvideo',
     'application/vnd.rn-realmedia',
-    'application/ogg'
+    'application/ogg',
     'video/mp4',
     'video/mpeg',
     'video/ogg',
