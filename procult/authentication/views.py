@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import authenticate, login
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions, viewsets, status, views
 from rest_framework.response import Response
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -118,6 +119,12 @@ class ProposalAnalisysDetailView(views.APIView):
         proposal.save()
         return Response(status=status.HTTP_200_OK)
 
+
+class CompressProposalFilesView(views.APIView):
+    def get(self, request, number):
+        proposal = get_object_or_404(Proposal, number=number)
+        path = proposal.compress_files(self.request)
+        return Response(data={'url': path})
 
 class ProposalOwnListView(views.APIView):
     def get(self, request, user_pk):

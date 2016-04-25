@@ -12,7 +12,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save
 from model_utils import Choices
-from .utils import normalize_text
+from .utils import normalize_text, compress_files
 from .signals import remove_proposal_file, remove_proposal_folder
 from .managers import ProposalManager
 
@@ -75,6 +75,22 @@ class Proposal(models.Model):
                                     instance=self,
                                     ente=self.ente)
         super(Proposal, self).delete(*args, **kwargs)
+
+    # XXX: Melhorar esse método
+    def compress_files(self, request):
+        fullpath = os.path.dirname(self.attachments.first().file.path)
+        path = self.attachments.first().file.url
+        path = "/".join(path.split(os.sep)[:-2])
+        filename = "{filename}.zip".format(filename=self.number)
+        compress_files(fullpath, self.number)
+
+        is_secure = request.is_secure()
+        zipped_file = "{path}/{file}".format(path=path, file=filename)
+        host = request.get_host()
+        if is_secure:
+            return "https://{url}{path}".format(url=host, path=zipped_file)
+        else:
+            return "http://{url}{path}".format(url=host, path=zipped_file)
 
 
 class AttachmentProposal(models.Model):
