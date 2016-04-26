@@ -51,6 +51,7 @@ INSTALLED_APPS = (
 
     'rest_framework',
     'rest_localflavor',
+    'import_export',
 
     'procult.authentication',
     'procult.core',

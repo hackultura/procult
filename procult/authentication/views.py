@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+
+from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, viewsets, status, views
@@ -12,6 +14,7 @@ from procult.authentication.serializers import (
     UserSerializer, LoginSerializer, ChangePasswordSerializer
 )
 from procult.core.models import Proposal, AttachmentProposal
+from procult.core.resources import ProposalResource
 from procult.core.serializers import (
     ProposalSerializer, ProposalUploadSerializer,
     ProposalLastSendedSerializer, ProposalLastAnalyzedSerializer
@@ -125,6 +128,15 @@ class CompressProposalFilesView(views.APIView):
         proposal = get_object_or_404(Proposal, number=number)
         path = proposal.compress_files(self.request)
         return Response(data={'url': path})
+
+
+class ExportProposalsView(views.APIView):
+    def get(self, request):
+        dataset = ProposalResource().export()
+        response = HttpResponse(dataset.csv, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=propostas.csv'
+        return response
+
 
 class ProposalOwnListView(views.APIView):
     def get(self, request, user_pk):

@@ -15,6 +15,7 @@ from procult.authentication.views import (
     ProposalDetailView,
     ProposalDashboardView,
     ProposalAnalisysDetailView,
+    ExportProposalsView,
     CompressProposalFilesView,
     ProposalOwnListView
 )
@@ -29,6 +30,7 @@ urlpatterns += [
     url(r'^api/v1/auth/password/change/(?P<user_pk>\d+)/$',
         ChangePasswordView.as_view()),
     url(r'^api/v1/propostas/$', ProposalView.as_view()),
+    url(r'^api/v1/propostas/export/csv/$', ExportProposalsView.as_view()),
     url(r'^api/v1/propostas/(?P<number>\d+)/$',
         ProposalDetailView.as_view()),
     url(r'^api/v1/propostas/(?P<number>\d+)/upload/$',
