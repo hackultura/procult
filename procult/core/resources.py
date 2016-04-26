@@ -10,6 +10,7 @@ class ProposalResource(resources.ModelResource):
     exportar nos formatos desejados
     """
     numero = fields.Field()
+    pasta_proposta = fields.Field()
     artista = fields.Field()
     projeto = fields.Field()
     criado_em = fields.Field()
@@ -17,9 +18,9 @@ class ProposalResource(resources.ModelResource):
 
     class Meta:
         model = Proposal
-        fields = ("numero", "artista", "projeto",
+        fields = ("numero", "pasta_proposta", "artista", "projeto",
                   "criado_em", "enviado_em",)
-        export_order = ("numero", "artista", "projeto",
+        export_order = ("numero", "pasta_proposta", "artista", "projeto",
                         "criado_em", "enviado_em",)
         exclude = ("id", "number", "ente", "title",
                    "status", "created_at", "sended_at", "updated_at",)
@@ -29,6 +30,9 @@ class ProposalResource(resources.ModelResource):
 
     def dehydrate_numero(self, proposal):
         return proposal.id
+
+    def dehydrate_pasta_proposta(self, proposal):
+        return proposal.number
 
     def dehydrate_artista(self, proposal):
         return proposal.ente.user.name
