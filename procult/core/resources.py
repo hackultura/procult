@@ -28,7 +28,7 @@ class ProposalResource(resources.ModelResource):
         return Proposal.objects.filter(status=Proposal.STATUS_CHOICES.sended)
 
     def dehydrate_numero(self, proposal):
-        return proposal.number
+        return proposal.id
 
     def dehydrate_artista(self, proposal):
         return proposal.ente.user.name
@@ -37,7 +37,7 @@ class ProposalResource(resources.ModelResource):
         return proposal.title
 
     def dehydrate_criado_em(self, proposal):
-        return proposal.created_at.strftime("%d/%m/%Y %H:%M:%S")
+        return proposal.created_at.astimezone().strftime("%d/%m/%Y %H:%M:%S")
 
     def dehydrate_enviado_em(self, proposal):
-        return proposal.sended_at.strftime("%d/%m/%Y %H:%M:%S")
+        return proposal.sended_at.astimezone().strftime("%d/%m/%Y %H:%M:%S")
