@@ -12,7 +12,7 @@ class ProposalResource(resources.ModelResource):
     numero = fields.Field()
     pasta_proposta = fields.Field()
     artista = fields.Field()
-    documento = fieldsField()
+    documento = fields.Field()
     projeto = fields.Field()
     criado_em = fields.Field()
     enviado_em = fields.Field()
