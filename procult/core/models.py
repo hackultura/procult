@@ -93,6 +93,10 @@ class Proposal(models.Model):
             return "http://{url}{path}".format(url=host, path=zipped_file)
 
 
+    def __unicode__(self):
+        return self.title
+
+
 class AttachmentProposal(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, editable=False)
     proposal = models.ForeignKey('Proposal', on_delete=models.CASCADE,
