@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import User, Ente
+from .forms import EnteForm
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -7,6 +8,7 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class EnteAdmin(admin.ModelAdmin):
+    form = EnteForm
     pass
 
 
