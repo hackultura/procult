@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.contrib import admin
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.conf import settings
@@ -17,12 +18,16 @@ from procult.authentication.views import (
     ProposalAnalisysDetailView,
     ExportProposalsView,
     CompressProposalFilesView,
-    ProposalOwnListView
+    ProposalOwnListView,
+    ProposalDateViewSet
 )
+
+admin.autodiscover()
 
 router = DefaultRouter()
 
 router.register(r'api/v1/usuarios', UserViewSet)
+router.register(r'api/v1/canCreateProposal', ProposalDateViewSet)
 urlpatterns = router.urls
 
 urlpatterns += [
@@ -42,6 +47,8 @@ urlpatterns += [
     url(r'^api/v1/propostas/user/(?P<user_pk>\d+)/$',
         ProposalOwnListView.as_view()),
     url(r'^api/v1/propostas/dashboard/$', ProposalDashboardView.as_view()),
+
+    url(r'^admin/', include(admin.site.urls)),
 ]
 
 if settings.DEBUG:

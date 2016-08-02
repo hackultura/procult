@@ -93,6 +93,10 @@ class Proposal(models.Model):
             return "http://{url}{path}".format(url=host, path=zipped_file)
 
 
+    def __unicode__(self):
+        return self.title
+
+
 class AttachmentProposal(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, editable=False)
     proposal = models.ForeignKey('Proposal', on_delete=models.CASCADE,
@@ -105,6 +109,14 @@ class AttachmentProposal(models.Model):
     def delete(self, *args, **kwargs):
         remove_proposal_file.send(sender=self.__class__, instance=self)
         super(AttachmentProposal, self).delete(*args, **kwargs)
+
+
+class ProposalDate(models.Model):
+    id = models.IntegerField(primary_key=True, editable=True)
+    is_available = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return "Settings"
 
 
 # Signals

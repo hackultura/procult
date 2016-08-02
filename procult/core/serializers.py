@@ -7,7 +7,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.conf import settings
 from django.utils import timezone
 from rest_framework import serializers
-from .models import Proposal, AttachmentProposal
+from .models import Proposal, ProposalDate, AttachmentProposal
 
 
 class ProposalUploadSerializer(serializers.ModelSerializer):
@@ -80,6 +80,15 @@ class ProposalSerializer(serializers.ModelSerializer):
 
         return value
 
+    def validate(self, data):
+        proposal_date = ProposalDate.objects.first()
+        if not proposal_date or proposal_date.is_available is False:
+            raise serializers.ValidationError(
+                {"availability": "Envio de propostas encerrado."}
+            )
+
+        return data
+
     def get_ente_info(self, obj):
         ente = {
             'author': obj.ente.user.name,
@@ -116,3 +125,11 @@ class ProposalLastAnalyzedSerializer(serializers.ModelSerializer):
         model = Proposal
         queryset = Proposal.objects.last_analyzed()
         fields = ('title','status_display',)
+
+
+class ProposalDateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProposalDate
+        fields = ('is_available',)
+        read_only_fields = ('is_available',)
