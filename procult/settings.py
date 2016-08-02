@@ -49,12 +49,15 @@ INSTALLED_APPS = (
 
     'raven.contrib.django.raven_compat',
 
+    'mptt',
     'rest_framework',
     'rest_localflavor',
     'import_export',
+    'test_without_migrations',
 
     'procult.authentication',
     'procult.core',
+    'procult.notice',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -151,7 +154,7 @@ ALLOWED_FILES = [
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/vnd.openxmlformats-officedocument.presentationml.slide',
     'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation', #NOQA
     'application/x-7z-compressed',
     'application/zip',
     'application/x-rar-compressed',
@@ -249,8 +252,8 @@ if settings.DEBUG:
         '0.0.0.0:5000',
     )
 RAVEN_CONFIG = {
-        'dsn': os.getenv('RAVEN_DSN_URL'),
-        # If you are using git, you can also automatically configure the
-        # release based on the git info.
-        'release': raven.fetch_git_sha(BASE_DIR),
+    'dsn': os.getenv('RAVEN_DSN_URL'),
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': raven.fetch_git_sha(BASE_DIR),
 }

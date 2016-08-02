@@ -2,8 +2,11 @@
 
 import re
 import os
+
 from zipfile import ZipFile, ZIP_DEFLATED
 from unicodedata import normalize
+from uuid import UUID
+
 from django.utils.encoding import force_text
 
 
@@ -33,3 +36,11 @@ def compress_files(dirname, zipname):
         zipfile.write(proposal_file, proposal_file[pathlen:])
     zipfile.close()
     return zipfile.filename
+
+
+def validate_uuid(uuid_string, version=4):
+    try:
+        value = UUID(uuid_string, version)
+    except ValueError:
+        return False
+    return value.hex == uuid_string

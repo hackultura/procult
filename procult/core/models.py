@@ -12,12 +12,15 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save
 from model_utils import Choices
+
 from .utils import normalize_text, compress_files
 from .signals import remove_proposal_file, remove_proposal_folder
 from .managers import ProposalManager
 
+
 def _generate_proposalnumber():
     return randint(1, 99999)
+
 
 def _attachment_filepath(instance, filename):
   cpf = re.sub(r'\W', '_', instance.proposal.ente.cpf)
