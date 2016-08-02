@@ -112,6 +112,7 @@ class AttachmentProposal(models.Model):
 
 
 class ProposalDate(models.Model):
+    id = models.IntegerField(primary_key=True, editable=True)
     is_available = models.BooleanField(default=False)
 
     def __unicode__(self):

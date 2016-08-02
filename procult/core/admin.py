@@ -17,6 +17,7 @@ class ProposalAdmin(admin.ModelAdmin):
 
 
 class ProposalDateAdmin(admin.ModelAdmin):
+    fields = ('is_available', 'id')
     pass
 
 #admin.site.register(Proposal, ProposalAdmin)

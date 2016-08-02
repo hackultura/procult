@@ -7,7 +7,7 @@ from django.db import migrations, models
 def create_configs(apps, schema_editor):
     ProposalDate = apps.get_model('core', 'ProposalDate')
 
-    p = ProposalDate()
+    p = ProposalDate(id=1)
     p.save()
 
 
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProposalDate',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.IntegerField(serialize=False, primary_key=True)),
                 ('is_available', models.BooleanField(default=False)),
             ],
         ),
