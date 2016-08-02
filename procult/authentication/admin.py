@@ -13,17 +13,16 @@ class UserAdmin(admin_auth.UserAdmin):
         (None, {'fields': ('email', 'password', 'is_admin')}),
         (_('Dados pessoais'), {'fields': ('name', )}),
         (_('Datas'), {'fields': ('created_at', 'updated_at')}),
-        (_('Permissoes'), {'fields': ('is_superuser',
-                                      'groups', 'user_permissions')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
             'fields': ('name', 'email', 'password1', 'password2',
-                       'is_admin', 'groups')}
+                       'is_admin')}
          ),
     )
     list_filter = []
+    filter_horizontal = []
     list_display = ('email', 'name')
     search_fields = ('email', 'name')
     ordering = ('email',)

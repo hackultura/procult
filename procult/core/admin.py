@@ -19,6 +19,6 @@ class ProposalAdmin(admin.ModelAdmin):
 class ProposalDateAdmin(admin.ModelAdmin):
     pass
 
-admin.site.register(Proposal, ProposalAdmin)
+#admin.site.register(Proposal, ProposalAdmin)
 admin.site.register(ProposalDate, ProposalDateAdmin)
-admin.site.register(AttachmentProposal, AttachmentAdmin)
+#admin.site.register(AttachmentProposal, AttachmentAdmin)
