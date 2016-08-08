@@ -12,7 +12,7 @@ class EnteForm(forms.ModelForm):
 
         if ente_serializer.is_valid() is False:
             if ente_serializer.errors.get(fieldname, None):
-                print ente_serializer.errors
+                print(ente_serializer.errors)
                 raise ValidationError(ente_serializer.errors[fieldname])
 
         return self.cleaned_data[fieldname]
