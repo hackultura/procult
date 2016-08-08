@@ -15,7 +15,7 @@ class ProposalForm(forms.ModelForm):
         proposal_serializer = ProposalSerializer(data=data)
 
         if proposal_serializer.is_valid() is False:
-            print proposal_serializer.errors
+            print(proposal_serializer.errors)
             if proposal_serializer.errors.get('availability', None):
                 raise ValidationError(proposal_serializer.errors['availability'])
         super(ProposalForm, self).clean()
