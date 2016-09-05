@@ -13,14 +13,14 @@ from procult.authentication.models import User
 from procult.authentication.serializers import (
     UserSerializer, LoginSerializer, ChangePasswordSerializer
 )
-from procult.core.models import Proposal, AttachmentProposal, ProposalDate
+from procult.core.models import (Proposal, AttachmentProposal,
+                                 ProposalDate, Notice)
 from procult.core.resources import ProposalResource
 from procult.core.serializers import (
     ProposalSerializer, ProposalUploadSerializer,
     ProposalLastSendedSerializer, ProposalLastAnalyzedSerializer,
-    ProposalDateSerializer
+    ProposalDateSerializer, NoticeSerializer
 )
-
 
 class ProposalDateViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'
@@ -191,3 +191,28 @@ class LoginView(views.APIView):
                     'message': 'Usuário ou senha estão inválidos.'
                 }, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProposalNoticeView(ListAPIView, RetrieveAPIView):
+    lookup_field = 'notice'
+    queryset = Proposal.objects.all()
+    serializer_class = ProposalSerializer
+
+
+class NoticeView(ListAPIView, CreateAPIView):
+    queryset = Notice.objects.all()
+    serializer_class = NoticeSerializer
+
+    def post(self, request):
+        serializer = NoticeSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NoticeDetailView(RetrieveAPIView, UpdateAPIView, DestroyAPIView):
+    lookup_field = 'id'
+    queryset = Notice.objects.all()
+    serializer_class = NoticeSerializer

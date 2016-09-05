@@ -7,7 +7,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.conf import settings
 from django.utils import timezone
 from rest_framework import serializers
-from .models import Proposal, ProposalDate, AttachmentProposal
+from .models import Proposal, ProposalDate, AttachmentProposal, Notice
 
 
 class ProposalUploadSerializer(serializers.ModelSerializer):
@@ -63,7 +63,7 @@ class ProposalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Proposal
         fields = ('ente', 'ente_info', 'title', 'id', 'number', 'status', 'created_at',
-                  'attachments', 'status_display', 'sended_at',)
+                  'attachments', 'status_display', 'sended_at', 'notice')
         read_only_fields = ('number', 'created_at', 'attachments',
                             'status_display', 'ente_detail',)
 
@@ -133,3 +133,15 @@ class ProposalDateSerializer(serializers.ModelSerializer):
         model = ProposalDate
         fields = ('is_available',)
         read_only_fields = ('is_available',)
+
+
+class NoticeSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    title = serializers.CharField()
+    description = serializers.CharField()
+    is_available = serializers.BooleanField()
+
+    class Meta:
+        model = Notice
+        fields = ('id', 'title', 'description', 'is_available',)
+        read_only_fields = ('id',)
