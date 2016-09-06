@@ -155,6 +155,16 @@ class ProposalOwnListView(views.APIView):
         return Response(serializer.data)
 
 
+class ProposalOwnByNoticeListView(views.APIView):
+    def get(self, request, user_pk, notice_pk):
+        user = User.objects.get(pk=user_pk)
+        proposals = Proposal.objects.filter(ente=user.ente).filter(notice=notice_pk)
+        serializer = ProposalSerializer(proposals,
+                                        context={'request': request},
+                                        many=True)
+        return Response(serializer.data)
+
+
 class ChangePasswordView(views.APIView):
     def post(self, request, user_pk, format=None):
         user = User.objects.get(pk=user_pk)
