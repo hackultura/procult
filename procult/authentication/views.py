@@ -14,18 +14,13 @@ from procult.authentication.serializers import (
     UserSerializer, LoginSerializer, ChangePasswordSerializer
 )
 from procult.core.models import (Proposal, AttachmentProposal,
-                                 ProposalDate, Notice)
+                                 Notice)
 from procult.core.resources import ProposalResource
 from procult.core.serializers import (
     ProposalSerializer, ProposalUploadSerializer,
     ProposalLastSendedSerializer, ProposalLastAnalyzedSerializer,
-    ProposalDateSerializer, NoticeSerializer
+    NoticeSerializer
 )
-
-class ProposalDateViewSet(viewsets.ModelViewSet):
-    lookup_field = 'id'
-    queryset = ProposalDate.objects.all()
-    serializer_class = ProposalDateSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):

@@ -127,14 +127,6 @@ class AttachmentProposal(models.Model):
         super(AttachmentProposal, self).delete(*args, **kwargs)
 
 
-class ProposalDate(models.Model):
-    id = models.IntegerField(primary_key=True, editable=True)
-    is_available = models.BooleanField(default=False)
-
-    def __unicode__(self):
-        return "Settings"
-
-
 # Signals
 @receiver(pre_save, sender=AttachmentProposal)
 def generate_checksum(sender, instance, **kwargs):

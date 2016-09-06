@@ -21,7 +21,6 @@ from procult.authentication.views import (
     CompressProposalFilesView,
     ProposalOwnListView,
     ProposalOwnByNoticeListView,
-    ProposalDateViewSet,
     ProposalNoticeView,
     NoticeView,
     NoticeDetailView
@@ -32,7 +31,6 @@ admin.autodiscover()
 router = DefaultRouter()
 
 router.register(r'api/v1/usuarios', UserViewSet)
-router.register(r'api/v1/canCreateProposal', ProposalDateViewSet)
 urlpatterns = router.urls
 
 urlpatterns += [
