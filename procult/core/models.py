@@ -31,6 +31,17 @@ def _attachment_filepath(instance, filename):
   return path
 
 
+class Notice(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(
+        max_length=60
+    )
+    description = models.CharField(
+        max_length=500
+    )
+    is_available = models.BooleanField(default=False)
+
+
 class Proposal(models.Model):
     STATUS_CHOICES = Choices(
         ('draft', "Rascunho"),
@@ -44,6 +55,11 @@ class Proposal(models.Model):
     ente = models.ForeignKey(
         'authentication.Ente',
         related_name='proposals'
+    )
+    notice = models.ForeignKey(
+        Notice,
+        related_name='proposals',
+        null=True
     )
     title = models.CharField(
         max_length=60
@@ -109,14 +125,6 @@ class AttachmentProposal(models.Model):
     def delete(self, *args, **kwargs):
         remove_proposal_file.send(sender=self.__class__, instance=self)
         super(AttachmentProposal, self).delete(*args, **kwargs)
-
-
-class ProposalDate(models.Model):
-    id = models.IntegerField(primary_key=True, editable=True)
-    is_available = models.BooleanField(default=False)
-
-    def __unicode__(self):
-        return "Settings"
 
 
 # Signals

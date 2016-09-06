@@ -22,10 +22,17 @@ class ProposalManager(models.Manager):
     def canceled(self):
         return self.filter(status=self.model.STATUS_CHOICES.canceled)
 
-    def last_sended(self, size=DASHBOARD_PAGE_SIZE):
+    def last_sended(self, notice_id=None, size=DASHBOARD_PAGE_SIZE):
+        if notice_id:
+            return self.sended().filter(notice=notice_id)[:size]
+
         return self.sended()[:size]
 
-    def last_analyzed(self, size=DASHBOARD_PAGE_SIZE):
+    def last_analyzed(self, notice_id=None, size=DASHBOARD_PAGE_SIZE):
         query = Q(status=self.model.STATUS_CHOICES.approved) & Q(
             status=self.model.STATUS_CHOICES.reproved)
+        if notice_id:
+            return self.filter(query).filter(notice=notice_id)[:size]
+
         return self.filter(query)[:size]
+

@@ -7,7 +7,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.conf import settings
 from django.utils import timezone
 from rest_framework import serializers
-from .models import Proposal, ProposalDate, AttachmentProposal
+from .models import Proposal, AttachmentProposal, Notice
 
 
 class ProposalUploadSerializer(serializers.ModelSerializer):
@@ -63,7 +63,7 @@ class ProposalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Proposal
         fields = ('ente', 'ente_info', 'title', 'id', 'number', 'status', 'created_at',
-                  'attachments', 'status_display', 'sended_at',)
+                  'attachments', 'status_display', 'sended_at', 'notice')
         read_only_fields = ('number', 'created_at', 'attachments',
                             'status_display', 'ente_detail',)
 
@@ -81,8 +81,14 @@ class ProposalSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        proposal_date = ProposalDate.objects.first()
-        if not proposal_date or proposal_date.is_available is False:
+        if not data['notice']:
+            raise serializers.ValidationError(
+                {"missing": "Edital não associado."}
+                )
+
+        is_available = data['notice'].is_available
+
+        if is_available is False:
             raise serializers.ValidationError(
                 {"availability": "Envio de propostas encerrado."}
             )
@@ -105,7 +111,7 @@ class ProposalLastSendedSerializer(serializers.ModelSerializer):
     ente_info = serializers.SerializerMethodField()
     class Meta:
         model = Proposal
-        fields = ('ente_info', 'title', 'id', 'number', 'status',
+        fields = ('ente_info', 'title', 'id', 'number', 'status', 'notice',
                   'status_display',)
 
     def get_ente_info(self, obj):
@@ -124,12 +130,16 @@ class ProposalLastAnalyzedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Proposal
         queryset = Proposal.objects.last_analyzed()
-        fields = ('title','status_display',)
+        fields = ('title','status_display', 'notice',)
 
 
-class ProposalDateSerializer(serializers.ModelSerializer):
+class NoticeSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    title = serializers.CharField()
+    description = serializers.CharField()
+    is_available = serializers.BooleanField()
 
     class Meta:
-        model = ProposalDate
-        fields = ('is_available',)
-        read_only_fields = ('is_available',)
+        model = Notice
+        fields = ('id', 'title', 'description', 'is_available',)
+        read_only_fields = ('id',)

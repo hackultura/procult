@@ -13,19 +13,14 @@ from procult.authentication.models import User
 from procult.authentication.serializers import (
     UserSerializer, LoginSerializer, ChangePasswordSerializer
 )
-from procult.core.models import Proposal, AttachmentProposal, ProposalDate
+from procult.core.models import (Proposal, AttachmentProposal,
+                                 Notice)
 from procult.core.resources import ProposalResource
 from procult.core.serializers import (
     ProposalSerializer, ProposalUploadSerializer,
     ProposalLastSendedSerializer, ProposalLastAnalyzedSerializer,
-    ProposalDateSerializer
+    NoticeSerializer
 )
-
-
-class ProposalDateViewSet(viewsets.ModelViewSet):
-    lookup_field = 'id'
-    queryset = ProposalDate.objects.all()
-    serializer_class = ProposalDateSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -68,6 +63,33 @@ class ProposalDashboardView(views.APIView):
             'approved': Proposal.objects.approved().count(),
             'reproved': Proposal.objects.reproved().count(),
             'canceled': Proposal.objects.canceled().count(),
+            'last_sended': last_sended.data,
+            'last_analyzed': last_analyzed.data
+        }
+        return Response(data)
+
+
+class ProposalNoticeDashboardView(views.APIView):
+    def get(self, request, notice_id):
+        last_sended = ProposalLastSendedSerializer(
+            Proposal.objects.last_sended(notice_id),
+            many=True
+        )
+        last_analyzed = ProposalLastAnalyzedSerializer(
+            Proposal.objects.last_analyzed(notice_id),
+            many=True
+        )
+        data = {
+            'drafted': Proposal.objects.drafted()
+                .filter(notice=notice_id).count(),
+            'sended': Proposal.objects.sended()
+                .filter(notice=notice_id).count(),
+            'approved': Proposal.objects.approved()
+                .filter(notice=notice_id).count(),
+            'reproved': Proposal.objects.reproved()
+                .filter(notice=notice_id).count(),
+            'canceled': Proposal.objects.canceled()
+                .filter(notice=notice_id).count(),
             'last_sended': last_sended.data,
             'last_analyzed': last_analyzed.data
         }
@@ -155,6 +177,16 @@ class ProposalOwnListView(views.APIView):
         return Response(serializer.data)
 
 
+class ProposalOwnByNoticeListView(views.APIView):
+    def get(self, request, user_pk, notice_pk):
+        user = User.objects.get(pk=user_pk)
+        proposals = Proposal.objects.filter(ente=user.ente).filter(notice=notice_pk)
+        serializer = ProposalSerializer(proposals,
+                                        context={'request': request},
+                                        many=True)
+        return Response(serializer.data)
+
+
 class ChangePasswordView(views.APIView):
     def post(self, request, user_pk, format=None):
         user = User.objects.get(pk=user_pk)
@@ -191,3 +223,28 @@ class LoginView(views.APIView):
                     'message': 'Usuário ou senha estão inválidos.'
                 }, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProposalNoticeView(ListAPIView, RetrieveAPIView):
+    lookup_field = 'notice'
+    queryset = Proposal.objects.all()
+    serializer_class = ProposalSerializer
+
+
+class NoticeView(ListAPIView, CreateAPIView):
+    queryset = Notice.objects.all()
+    serializer_class = NoticeSerializer
+
+    def post(self, request):
+        serializer = NoticeSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NoticeDetailView(RetrieveAPIView, UpdateAPIView, DestroyAPIView):
+    lookup_field = 'id'
+    queryset = Notice.objects.all()
+    serializer_class = NoticeSerializer

@@ -15,11 +15,15 @@ from procult.authentication.views import (
     ProposalUploadFilesDetailView,
     ProposalDetailView,
     ProposalDashboardView,
+    ProposalNoticeDashboardView,
     ProposalAnalisysDetailView,
     ExportProposalsView,
     CompressProposalFilesView,
     ProposalOwnListView,
-    ProposalDateViewSet
+    ProposalOwnByNoticeListView,
+    ProposalNoticeView,
+    NoticeView,
+    NoticeDetailView
 )
 
 admin.autodiscover()
@@ -27,7 +31,6 @@ admin.autodiscover()
 router = DefaultRouter()
 
 router.register(r'api/v1/usuarios', UserViewSet)
-router.register(r'api/v1/canCreateProposal', ProposalDateViewSet)
 urlpatterns = router.urls
 
 urlpatterns += [
@@ -46,7 +49,17 @@ urlpatterns += [
         ProposalUploadFilesDetailView.as_view()),
     url(r'^api/v1/propostas/user/(?P<user_pk>\d+)/$',
         ProposalOwnListView.as_view()),
+    url(r'^api/v1/propostas/user/(?P<user_pk>\d+)/(?P<notice_pk>\d+)/$',
+        ProposalOwnByNoticeListView.as_view()),
     url(r'^api/v1/propostas/dashboard/$', ProposalDashboardView.as_view()),
+    url(r'^api/v1/propostas/dashboard/(?P<notice_id>\d+)/$', ProposalNoticeDashboardView.as_view()),
+    url(r'^api/v1/editais/(?P<notice>\d+)/$',
+        ProposalNoticeView.as_view()),
+
+
+    url(r'^api/v1/editais/$', NoticeView.as_view()),
+    url(r'^api/v1/edital/(?P<id>\d+)/$',
+        NoticeDetailView.as_view()),
 
     url(r'^admin/', include(admin.site.urls)),
 ]
