@@ -74,6 +74,33 @@ class ProposalDashboardView(views.APIView):
         return Response(data)
 
 
+class ProposalNoticeDashboardView(views.APIView):
+    def get(self, request, notice_id):
+        last_sended = ProposalLastSendedSerializer(
+            Proposal.objects.last_sended(notice_id),
+            many=True
+        )
+        last_analyzed = ProposalLastAnalyzedSerializer(
+            Proposal.objects.last_analyzed(notice_id),
+            many=True
+        )
+        data = {
+            'drafted': Proposal.objects.drafted()
+                .filter(notice=notice_id).count(),
+            'sended': Proposal.objects.sended()
+                .filter(notice=notice_id).count(),
+            'approved': Proposal.objects.approved()
+                .filter(notice=notice_id).count(),
+            'reproved': Proposal.objects.reproved()
+                .filter(notice=notice_id).count(),
+            'canceled': Proposal.objects.canceled()
+                .filter(notice=notice_id).count(),
+            'last_sended': last_sended.data,
+            'last_analyzed': last_analyzed.data
+        }
+        return Response(data)
+
+
 class ProposalView(ListAPIView, CreateAPIView):
     queryset = Proposal.objects.exclude(status=Proposal.STATUS_CHOICES.draft)
     serializer_class = ProposalSerializer

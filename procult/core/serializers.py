@@ -105,7 +105,7 @@ class ProposalLastSendedSerializer(serializers.ModelSerializer):
     ente_info = serializers.SerializerMethodField()
     class Meta:
         model = Proposal
-        fields = ('ente_info', 'title', 'id', 'number', 'status',
+        fields = ('ente_info', 'title', 'id', 'number', 'status', 'notice',
                   'status_display',)
 
     def get_ente_info(self, obj):
@@ -124,7 +124,7 @@ class ProposalLastAnalyzedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Proposal
         queryset = Proposal.objects.last_analyzed()
-        fields = ('title','status_display',)
+        fields = ('title','status_display', 'notice',)
 
 
 class ProposalDateSerializer(serializers.ModelSerializer):
