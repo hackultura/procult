@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.utils import timezone
 
 from import_export import resources, fields
 from .models import Proposal
@@ -16,18 +17,26 @@ class ProposalResource(resources.ModelResource):
     projeto = fields.Field()
     criado_em = fields.Field()
     enviado_em = fields.Field()
+    edital = fields.Field()
+    numero_edital = fields.Field()
 
     class Meta:
         model = Proposal
         fields = ("numero", "pasta_proposta", "artista", "documento", "projeto",
-                  "criado_em", "enviado_em",)
+                  "criado_em", "enviado_em", "edital", "numero_edital")
         export_order = ("numero", "pasta_proposta", "artista","projeto",
-                        "documento", "criado_em", "enviado_em",)
+                        "documento", "criado_em", "enviado_em", "edital", "numero_edital")
         exclude = ("id", "number", "ente", "title",
-                   "status", "created_at", "sended_at", "updated_at",)
+                   "status", "created_at", "sended_at", "updated_at", "notice")
 
     def get_queryset(self):
         return Proposal.objects.filter(status=Proposal.STATUS_CHOICES.sended)
+
+    def dehydrate_numero_edital(self, proposal):
+        return proposal.notice.id
+
+    def dehydrate_edital(self, proposal):
+        return proposal.notice.title
 
     def dehydrate_numero(self, proposal):
         return proposal.id
@@ -45,7 +54,7 @@ class ProposalResource(resources.ModelResource):
         return proposal.title
 
     def dehydrate_criado_em(self, proposal):
-        return proposal.created_at.astimezone().strftime("%d/%m/%Y %H:%M:%S")
+        return proposal.created_at.astimezone(timezone.get_current_timezone()).strftime("%d/%m/%Y %H:%M:%S")
 
     def dehydrate_enviado_em(self, proposal):
-        return proposal.sended_at.astimezone().strftime("%d/%m/%Y %H:%M:%S")
+        return proposal.sended_at.astimezone(timezone.get_current_timezone()).strftime("%d/%m/%Y %H:%M:%S")
