@@ -95,6 +95,10 @@ class Proposal(models.Model):
     @staticmethod
     def compress_all_files(request, notice):
         proposal = Proposal.objects.filter(notice=notice).first()
+
+        if not proposal or not proposal.attachments.first():
+            return None
+
         fullpath = os.path.dirname(proposal.attachments.first().file.path)
         fullpath = "/".join(fullpath.split(os.sep)[:-1])
         path = proposal.attachments.first().file.url
