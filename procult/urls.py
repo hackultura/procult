@@ -25,7 +25,11 @@ from procult.authentication.views import (
     ProposalOwnByNoticeListView,
     ProposalNoticeView,
     NoticeView,
-    NoticeDetailView
+    NoticeDetailView,
+    ProposalTagView,
+    ProposalTagDetailView,
+    NoticeIdNameView,
+    TagIdNameView
 )
 
 admin.autodiscover()
@@ -65,6 +69,15 @@ urlpatterns += [
     url(r'^api/v1/editais/$', NoticeView.as_view()),
     url(r'^api/v1/edital/(?P<id>\d+)/$',
         NoticeDetailView.as_view()),
+
+    url(r'^api/v1/tags/$', ProposalTagView.as_view()),
+    url(r'^api/v1/tags/(?P<id>\d+)/$',
+        ProposalTagDetailView.as_view()),
+
+    url(r'^api/v1/notice_name_id/$',
+        NoticeIdNameView.as_view()),
+    url(r'^api/v1/tag_name_id/(?P<notice_pk>\d+)/$',
+        TagIdNameView.as_view()),
 
     url(r'^admin/', include(admin.site.urls)),
 ]

@@ -36,6 +36,10 @@ class Notice(models.Model):
         max_length=500
     )
     is_available = models.BooleanField(default=False)
+    tags_available = models.ManyToManyField('core.ProposalTag');
+
+    def __unicode__(self):
+        return self.title
 
 
 class Proposal(models.Model):
@@ -54,6 +58,11 @@ class Proposal(models.Model):
     )
     notice = models.ForeignKey(
         Notice,
+        related_name='proposals',
+        null=True
+    )
+    tag = models.ForeignKey(
+        'core.ProposalTag',
         related_name='proposals',
         null=True
     )
@@ -77,6 +86,10 @@ class Proposal(models.Model):
 
     class Meta:
         ordering = ['-created_at', '-updated_at']
+
+    @property
+    def tag_name(self):
+        return self.tag.name
 
     @property
     def status_display(self):
@@ -145,6 +158,12 @@ class AttachmentProposal(models.Model):
         remove_proposal_file.send(sender=self.__class__, instance=self)
         super(AttachmentProposal, self).delete(*args, **kwargs)
 
+
+class ProposalTag(models.Model):
+    name = models.CharField(max_length=60)
+
+    def __unicode__(self):
+        return self.name
 
 # Signals
 @receiver(pre_save, sender=AttachmentProposal)
