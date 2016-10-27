@@ -16,6 +16,9 @@ def port_models(apps, schema_editor):
         p.notice = n
         p.save()
 
+def reverse_port_models(apps, schema_editor):
+    pass
+
 
 class Migration(migrations.Migration):
 
@@ -38,5 +41,5 @@ class Migration(migrations.Migration):
             name='notice',
             field=models.ForeignKey(related_name='proposals', to='core.Notice', null=True),
         ),
-        migrations.RunPython(port_models),
+        migrations.RunPython(port_models, reverse_port_models),
     ]

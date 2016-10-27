@@ -3,9 +3,10 @@
 import re
 import os
 from zipfile import ZipFile, ZIP_DEFLATED
+from random import randint
 from unicodedata import normalize
 from django.utils.encoding import force_text
-
+from django.apps import apps
 
 def normalize_text(text, delim='_'):
     """Generates an slightly worse ASCII-only."""
@@ -61,3 +62,11 @@ def compress_all_files(dirname, zipname):
 
     zipfile.close()
     return zipfile.filename
+
+def _generate_proposalnumber():
+    number = randint(1, 99999)
+    Proposal = apps.get_model('core', 'Proposal')
+    while len(Proposal.objects.filter(number=number)) != 0:
+        number = randint(1, 99999)
+
+    return number

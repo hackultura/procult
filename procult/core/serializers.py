@@ -2,6 +2,7 @@
 
 import re
 import bitmath
+import os
 
 from django.core.files.uploadedfile import UploadedFile
 from django.conf import settings
@@ -38,6 +39,9 @@ class ProposalUploadSerializer(serializers.ModelSerializer):
         """
         Trata a URL do documento
         """
+        if not obj.file:
+            return "Not a valid file."
+
         request = self.context.get('request')
         is_secure = request._request.is_secure()
         host = request._request.get_host()
@@ -47,10 +51,16 @@ class ProposalUploadSerializer(serializers.ModelSerializer):
             return "http://{url}{path}".format(url=host, path=obj.file.url)
 
     def get_filename(self, obj):
+        if not obj.file or not os.path.isfile(obj.file.path):
+            return "File not found on server."
+
         filename = obj.file.name.split('/')[-1]
         return re.sub('\_', ' ', filename)
 
     def get_size(self, obj):
+        if not obj.file or not os.path.isfile(obj.file.path):
+            return "File not found on server."
+
         return bitmath.Byte(obj.file.size).best_prefix().format(
             "{value:.2f} {unit}")
 

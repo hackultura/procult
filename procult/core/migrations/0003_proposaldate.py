@@ -10,6 +10,8 @@ def create_configs(apps, schema_editor):
     p = ProposalDate(id=1)
     p.save()
 
+def reverse_create_configs(apps, schema_editor):
+    pass
 
 class Migration(migrations.Migration):
 
@@ -25,5 +27,5 @@ class Migration(migrations.Migration):
                 ('is_available', models.BooleanField(default=False)),
             ],
         ),
-        migrations.RunPython(create_configs),
+        migrations.RunPython(create_configs, reverse_create_configs),
     ]
