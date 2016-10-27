@@ -15,6 +15,9 @@ def port_models(apps, schema_editor):
         p.tags_available.add(tag)
         p.save()
 
+def reverse_port_models(apps, schema_editor):
+    pass
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -27,5 +30,5 @@ class Migration(migrations.Migration):
             name='tags_available',
             field=models.ManyToManyField(to='core.ProposalTag'),
         ),
-        migrations.RunPython(port_models),
+        migrations.RunPython(port_models, reverse_port_models),
     ]
