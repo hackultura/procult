@@ -168,7 +168,7 @@ class CompressProposalAllFilesView(views.APIView):
 
 class ExportProposalsView(views.APIView):
     def get(self, request):
-        queryset = Proposal.objects.filter(status=Proposal.STATUS_CHOICES.sended)
+        queryset = Proposal.objects.all()
         dataset = ProposalResource().export(queryset)
         response = HttpResponse(dataset.csv, content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=propostas.csv'
@@ -177,7 +177,7 @@ class ExportProposalsView(views.APIView):
 
 class ExportProposalsSingleView(views.APIView):
     def get(self, request, notice_pk):
-        queryset = Proposal.objects.filter(notice=notice_pk).filter(status=Proposal.STATUS_CHOICES.sended)
+        queryset = Proposal.objects.filter(notice=notice_pk)
         dataset = ProposalResource().export(queryset)
         response = HttpResponse(dataset.csv, content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=propostas.csv'

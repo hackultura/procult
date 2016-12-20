@@ -10,6 +10,7 @@ class ProposalResource(resources.ModelResource):
     Resource do modelo de Propostas para
     exportar nos formatos desejados
     """
+    estado = fields.Field()
     numero = fields.Field()
     pasta_proposta = fields.Field()
     artista = fields.Field()
@@ -21,19 +22,22 @@ class ProposalResource(resources.ModelResource):
     numero_edital = fields.Field()
     genero = fields.Field()
     idade = fields.Field()
-    regiao_administrativa = fields.Field() 
+    regiao_administrativa = fields.Field()
 
     class Meta:
         model = Proposal
-        fields = ("numero", "pasta_proposta", "artista", "documento", "projeto",
+        fields = ("estado", "numero", "pasta_proposta", "artista", "documento", "projeto",
                   "criado_em", "enviado_em", "edital", "numero_edital", "genero", "idade", "regiao_administrativa")
-        export_order = ("numero", "pasta_proposta", "artista","projeto",
+        export_order = ("estado", "numero", "pasta_proposta", "artista","projeto",
                         "documento", "criado_em", "enviado_em", "edital", "numero_edital", "genero", "idade", "regiao_administrativa")
         exclude = ("id", "number", "ente", "title",
                    "status", "created_at", "sended_at", "updated_at", "notice")
 
     def get_queryset(self):
-        return Proposal.objects.filter(status=Proposal.STATUS_CHOICES.sended)
+        return Proposal.objects.all()
+
+    def dehydrate_estado(self, proposal):
+        return proposal.status_display
 
     def dehydrate_numero_edital(self, proposal):
         return proposal.notice.id
