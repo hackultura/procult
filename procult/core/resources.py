@@ -10,6 +10,7 @@ class ProposalResource(resources.ModelResource):
     Resource do modelo de Propostas para
     exportar nos formatos desejados
     """
+    estado = fields.Field()
     numero = fields.Field()
     pasta_proposta = fields.Field()
     artista = fields.Field()
@@ -19,18 +20,24 @@ class ProposalResource(resources.ModelResource):
     enviado_em = fields.Field()
     edital = fields.Field()
     numero_edital = fields.Field()
+    genero = fields.Field()
+    idade = fields.Field()
+    regiao_administrativa = fields.Field()
 
     class Meta:
         model = Proposal
-        fields = ("numero", "pasta_proposta", "artista", "documento", "projeto",
-                  "criado_em", "enviado_em", "edital", "numero_edital")
-        export_order = ("numero", "pasta_proposta", "artista","projeto",
-                        "documento", "criado_em", "enviado_em", "edital", "numero_edital")
+        fields = ("estado", "numero", "pasta_proposta", "artista", "documento", "projeto",
+                  "criado_em", "enviado_em", "edital", "numero_edital", "genero", "idade", "regiao_administrativa")
+        export_order = ("estado", "numero", "pasta_proposta", "artista","projeto",
+                        "documento", "criado_em", "enviado_em", "edital", "numero_edital", "genero", "idade", "regiao_administrativa")
         exclude = ("id", "number", "ente", "title",
                    "status", "created_at", "sended_at", "updated_at", "notice")
 
     def get_queryset(self):
-        return Proposal.objects.filter(status=Proposal.STATUS_CHOICES.sended)
+        return Proposal.objects.all()
+
+    def dehydrate_estado(self, proposal):
+        return proposal.status_display
 
     def dehydrate_numero_edital(self, proposal):
         return proposal.notice.id
@@ -58,3 +65,12 @@ class ProposalResource(resources.ModelResource):
 
     def dehydrate_enviado_em(self, proposal):
         return proposal.sended_at.astimezone(timezone.get_current_timezone()).strftime("%d/%m/%Y %H:%M:%S")
+
+    def dehydrate_genero(self, proposal):
+        return proposal.ente.user.gender
+
+    def dehydrate_idade(self, proposal):
+        return proposal.ente.user.age
+
+    def dehydrate_regiao_administrativa(self, proposal):
+        return proposal.ente.user.verbose_admin_region

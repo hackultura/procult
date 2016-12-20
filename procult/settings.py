@@ -209,7 +209,8 @@ REST_FRAMEWORK = {
     'DATE_FORMAT': "%d/%m/%Y",
     'DATE_INPUT_FORMATS': ["%d/%m/%Y", "%d/%m/%y"],
     'PAGE_SIZE': 100,
-    'EXCEPTION_HANDLER': 'procult.core.exceptions.custom_exception_handler'
+    'EXCEPTION_HANDLER': 'procult.core.exceptions.custom_exception_handler',
+    'UNICODE_JSON': False
 }
 
 # Desabilitando o friendly browser view do Django Rest Framework
