@@ -14,12 +14,13 @@ from procult.authentication.serializers import (
     UserSerializer, LoginSerializer, ChangePasswordSerializer
 )
 from procult.core.models import (Proposal, AttachmentProposal,
-                                 Notice)
+                                 Notice, ProposalTag)
 from procult.core.resources import ProposalResource
 from procult.core.serializers import (
     ProposalSerializer, ProposalUploadSerializer,
     ProposalLastSendedSerializer, ProposalLastAnalyzedSerializer,
-    NoticeSerializer
+    NoticeSerializer, ProposalTagSerializer, NoticeNameIdSerializer,
+    TagNameIdSerializer
 )
 
 
@@ -264,3 +265,42 @@ class NoticeDetailView(RetrieveAPIView, UpdateAPIView, DestroyAPIView):
     lookup_field = 'id'
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
+
+
+class ProposalTagView(ListAPIView, CreateAPIView):
+    queryset = ProposalTag.objects.all()
+    serializer_class = ProposalTagSerializer
+
+    def post(self, request):
+        serializer = ProposalTagSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProposalTagDetailView(RetrieveAPIView, UpdateAPIView, DestroyAPIView):
+    lookup_field = 'id'
+    queryset = ProposalTag.objects.all()
+    serializer_class = ProposalTagSerializer
+
+
+class NoticeIdNameView(ListAPIView):
+    queryset = Notice.objects.all()
+    serializer_class = NoticeNameIdSerializer
+
+
+class TagIdNameView(ListAPIView):
+    queryset = ProposalTag.objects.all()
+    serializer_class = TagNameIdSerializer
+
+
+class TagIdNameView(views.APIView):
+    def get(self, request, notice_pk):
+        notice = Notice.objects.get(pk=notice_pk);
+        tags = ProposalTag.objects.filter(id__in=notice.tags_available.all())
+        serializer = TagNameIdSerializer(tags,
+                                        context={'request': request},
+                                        many=True)
+        return Response(serializer.data)

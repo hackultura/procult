@@ -8,7 +8,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.conf import settings
 from django.utils import timezone
 from rest_framework import serializers
-from .models import Proposal, AttachmentProposal, Notice
+from .models import Proposal, AttachmentProposal, Notice, ProposalTag
 
 
 class ProposalUploadSerializer(serializers.ModelSerializer):
@@ -69,13 +69,15 @@ class ProposalSerializer(serializers.ModelSerializer):
     attachments = ProposalUploadSerializer(many=True, read_only=True)
     status = serializers.CharField()
     status_display = serializers.CharField(read_only=True)
+    tag_name = serializers.CharField(read_only=True)
     ente_info = serializers.SerializerMethodField()
+
     class Meta:
         model = Proposal
         fields = ('ente', 'ente_info', 'title', 'id', 'number', 'status', 'created_at',
-                  'attachments', 'status_display', 'sended_at', 'notice')
+                  'attachments', 'status_display', 'sended_at', 'notice', 'tag', 'tag_name')
         read_only_fields = ('number', 'created_at', 'attachments',
-                            'status_display', 'ente_detail',)
+                            'status_display', 'ente_detail', 'tag_name')
 
     def validate_ente(self, value):
         if not value.cpf and not value.cnpj:
@@ -151,5 +153,30 @@ class NoticeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notice
-        fields = ('id', 'title', 'description', 'is_available',)
+        fields = ('id', 'title', 'description', 'is_available', 'tags_available')
         read_only_fields = ('id',)
+
+
+class ProposalTagSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField()
+
+    class Meta:
+        model = ProposalTag
+        fields = ('id', 'name')
+
+
+class NoticeNameIdSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Notice
+        fields = ('title', 'id')
+        read_only_fields = ('title', 'id')
+
+
+class TagNameIdSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProposalTag
+        fields = ('name', 'id')
+        read_only_fields = ('name', 'id')
