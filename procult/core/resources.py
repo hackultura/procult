@@ -19,13 +19,16 @@ class ProposalResource(resources.ModelResource):
     enviado_em = fields.Field()
     edital = fields.Field()
     numero_edital = fields.Field()
+    genero = fields.Field()
+    idade = fields.Field()
+    regiao_administrativa = fields.Field() 
 
     class Meta:
         model = Proposal
         fields = ("numero", "pasta_proposta", "artista", "documento", "projeto",
-                  "criado_em", "enviado_em", "edital", "numero_edital")
+                  "criado_em", "enviado_em", "edital", "numero_edital", "genero", "idade", "regiao_administrativa")
         export_order = ("numero", "pasta_proposta", "artista","projeto",
-                        "documento", "criado_em", "enviado_em", "edital", "numero_edital")
+                        "documento", "criado_em", "enviado_em", "edital", "numero_edital", "genero", "idade", "regiao_administrativa")
         exclude = ("id", "number", "ente", "title",
                    "status", "created_at", "sended_at", "updated_at", "notice")
 
@@ -58,3 +61,12 @@ class ProposalResource(resources.ModelResource):
 
     def dehydrate_enviado_em(self, proposal):
         return proposal.sended_at.astimezone(timezone.get_current_timezone()).strftime("%d/%m/%Y %H:%M:%S")
+
+    def dehydrate_genero(self, proposal):
+        return proposal.ente.user.gender
+
+    def dehydrate_idade(self, proposal):
+        return proposal.ente.user.age
+
+    def dehydrate_regiao_administrativa(self, proposal):
+        return proposal.ente.user.verbose_admin_region
