@@ -21,7 +21,7 @@ def reverse_port_models(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0006_auto_20161005_0100'),
+        ('core', '0007_auto_20161220_0100'),
     ]
 
     operations = [
