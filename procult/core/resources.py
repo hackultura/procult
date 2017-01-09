@@ -64,7 +64,10 @@ class ProposalResource(resources.ModelResource):
         return proposal.created_at.astimezone(timezone.get_current_timezone()).strftime("%d/%m/%Y %H:%M:%S")
 
     def dehydrate_enviado_em(self, proposal):
-        return proposal.sended_at.astimezone(timezone.get_current_timezone()).strftime("%d/%m/%Y %H:%M:%S")
+        if proposal.sended_at:
+            return proposal.sended_at.astimezone(timezone.get_current_timezone()).strftime("%d/%m/%Y %H:%M:%S")
+        else:
+            return ""
 
     def dehydrate_genero(self, proposal):
         return proposal.ente.user.gender
