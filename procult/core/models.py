@@ -10,6 +10,8 @@ from django.dispatch.dispatcher import receiver
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save, post_save
+from procult.settings import MEDIA_ROOT
+
 from model_utils import Choices
 from .utils import normalize_text, compress_files, compress_all_files, _generate_proposalnumber
 from .signals import remove_proposal_file, remove_proposal_folder
@@ -40,6 +42,37 @@ class Notice(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    def get_proposals(self):
+        proposals = Proposal.objects.filter(notice=self)
+        return proposals
+
+    def get_proposals_zip_file(self):
+        proposals = get_proposals(self)
+
+        if not proposals: 
+            return None
+
+        path = os.mkdir("{}/editais".format(MEDIA_ROOT)) 
+        filename = "Edital-{}".format(self.id)
+
+        for proposal in proposals.filter(status='sended'):
+            fullpath = os.path.dirname(proposal.attachments.first().file.path)
+            fullpath = "/".join(fullpath.split(os.sep)[:-1])
+
+            # path = proposal.attachments.first().file.url
+            # path = "/".join(path.split(os.sep)[:-1])
+
+            compress_all_files(fullpath, filename)
+
+        is_secure = request.is_secure()
+        zipped_file = "{path}/{file}.zip".format(path=path, file=filename)
+        host = request.get_host()
+        if is_secure:
+            return "https://{url}{path}".format(url=host, path=zipped_file)
+        else:
+            return "http://{url}{path}".format(url=host, path=zipped_file)
+        
 
 
 class Proposal(models.Model):

@@ -45,9 +45,9 @@ def compress_all_files(dirname, zipname):
     os.chdir('..')
     zip_path = os.getcwd()
 
-    zipfile = ZipFile(os.path.join(zip_path, name), mode='w',
+    zipfile = ZipFile(os.path.join(zip_path, name), mode='a',
                       compression=ZIP_DEFLATED)
-    pathlen = len(dirname) + 1
+    pathlen = len(dirname) + 3
     isFirst = True
     for directory in os.walk(dirname):
         # Skip files in root directory, as another .zip files generated will be there
