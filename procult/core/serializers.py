@@ -145,6 +145,18 @@ class ProposalLastAnalyzedSerializer(serializers.ModelSerializer):
         fields = ('title','status_display', 'notice',)
 
 
+class NoticeSerializerCreate(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    title = serializers.CharField()
+    description = serializers.CharField()
+    is_available = serializers.BooleanField()
+
+    class Meta:
+        model = Notice
+        fields = ('id', 'title', 'description', 'is_available', 'tags_available')
+        read_only_fields = ('id', 'tags_available')
+
+
 class NoticeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     title = serializers.CharField()

@@ -9,7 +9,7 @@ import hashlib
 from django.dispatch.dispatcher import receiver
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from model_utils import Choices
 from .utils import normalize_text, compress_files, compress_all_files, _generate_proposalnumber
 from .signals import remove_proposal_file, remove_proposal_folder
@@ -166,6 +166,20 @@ class ProposalTag(models.Model):
         return self.name
 
 # Signals
+@receiver(post_save, sender=Notice)
+def create_default_tags(sender, instance, created, **kwargs):
+    if not created:
+        return
+
+    tag_default = ProposalTag.objects.filter(name="Nenhuma")
+    if tag_default.count() > 0:
+        instance.tags_available.add(tag_default.first())
+    else:
+        tag = ProposalTag()
+        tag.name = "Nenhuma"
+        tag.save()
+        instance.tags_available.add(tag)
+
 @receiver(pre_save, sender=AttachmentProposal)
 def generate_checksum(sender, instance, **kwargs):
     instance.checksum = hashlib.md5(instance.file.read()).hexdigest()
