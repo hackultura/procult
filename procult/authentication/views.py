@@ -19,7 +19,7 @@ from procult.core.resources import ProposalResource
 from procult.core.serializers import (
     ProposalSerializer, ProposalUploadSerializer,
     ProposalLastSendedSerializer, ProposalLastAnalyzedSerializer,
-    NoticeSerializer, ProposalTagSerializer, NoticeNameIdSerializer,
+    NoticeSerializer, NoticeSerializerCreate, ProposalTagSerializer, NoticeNameIdSerializer,
     TagNameIdSerializer
 )
 
@@ -250,10 +250,10 @@ class ProposalNoticeView(ListAPIView, RetrieveAPIView):
 
 class NoticeView(ListAPIView, CreateAPIView):
     queryset = Notice.objects.all()
-    serializer_class = NoticeSerializer
+    serializer_class = NoticeSerializerCreate
 
     def post(self, request):
-        serializer = NoticeSerializer(data=request.data)
+        serializer = NoticeSerializerCreate(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
