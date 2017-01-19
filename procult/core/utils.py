@@ -35,32 +35,23 @@ def compress_files(dirname, zipname):
     zipfile.close()
     return zipfile.filename
 
-def compress_all_files(dirname, zipname):
+def compress_folder_files(dirname, zipname, zipfile):
     """Compress files in directory to zipped file"""
-    name = "{zipname}.zip".format(zipname=zipname)
+    
     files = [files for base, subdirs, files in os.walk(dirname)][0]
 
     # Change path to save zipped file in user folder
     os.chdir(dirname)
-    os.chdir('..')
-    zip_path = os.getcwd()
 
-    zipfile = ZipFile(os.path.join(zip_path, name), mode='a',
-                      compression=ZIP_DEFLATED)
-    pathlen = len(dirname) + 3
-    isFirst = True
     for directory in os.walk(dirname):
-        # Skip files in root directory, as another .zip files generated will be there
-        if isFirst:
-            isFirst = False
-            continue
 
         for filename in directory[2]:
-            print(directory[0])
             proposal_file = os.path.join(directory[0], filename)
-            zipfile.write(proposal_file, proposal_file[pathlen:])
+            proposal_filepath = "/".join(dirname.split(os.sep)[-1:])
+            proposal_filepath = "{directory}/{filename}".format(directory=proposal_filepath,
+                                                               filename=proposal_file.split(os.sep)[-1])
+            zipfile.write(proposal_file, proposal_filepath)
 
-    zipfile.close()
     return zipfile.filename
 
 def _generate_proposalnumber():

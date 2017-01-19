@@ -162,7 +162,7 @@ class CompressProposalFilesView(views.APIView):
 
 class CompressProposalAllFilesView(views.APIView):
     def get(self, request, notice_pk):
-        path = Proposal.compress_all_files(request, notice_pk)
+        path = Notice.objects.get(pk=notice_pk).get_proposals_zip_file(request);
         return Response(data={'url': path})
 
 
