@@ -139,10 +139,23 @@ class ProposalLastSendedSerializer(serializers.ModelSerializer):
 
 
 class ProposalLastAnalyzedSerializer(serializers.ModelSerializer):
+    ente_info = serializers.SerializerMethodField()
     class Meta:
         model = Proposal
         queryset = Proposal.objects.last_analyzed()
-        fields = ('title','status_display', 'notice',)
+        fields = ('ente_info', 'title', 'id', 'number', 'status', 'notice',
+                  'status_display')
+
+    def get_ente_info(self, obj):
+        ente = {
+            'author': obj.ente.user.name,
+            'ceac': obj.ente.ceac
+        }
+        if obj.ente.cpf not in [None, '']:
+            ente['cpf'] = obj.ente.cpf
+        else:
+            ente['cnpj'] = obj.ente.cnpj
+        return ente
 
 
 class NoticeSerializerCreate(serializers.ModelSerializer):
