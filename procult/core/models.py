@@ -5,13 +5,16 @@ import uuid
 import os
 import shutil
 import hashlib
+from zipfile import ZipFile, ZIP_DEFLATED
 
 from django.dispatch.dispatcher import receiver
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save, post_save
+from procult.settings import MEDIA_ROOT
+
 from model_utils import Choices
-from .utils import normalize_text, compress_files, compress_all_files, _generate_proposalnumber
+from .utils import normalize_text, compress_files, compress_folder_files, _generate_proposalnumber
 from .signals import remove_proposal_file, remove_proposal_folder
 from .managers import ProposalManager
 
@@ -40,6 +43,48 @@ class Notice(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    def get_proposals(self):
+        proposals = Proposal.objects.filter(notice=self)
+        return proposals
+
+    def get_proposals_zip_file(self, request, **kwargs_filters):
+        proposals = self.get_proposals()
+
+        if not kwargs_filters.get('status', False):
+            kwargs_filters['status'] = 'sended'
+
+        if not proposals: 
+            return None
+
+        path = "{}/editais".format(MEDIA_ROOT)
+        if not os.path.isdir(path):
+            os.mkdir(path)
+
+        filename = "Edital-{}".format(self.id)
+
+        name = "{zipname}.zip".format(zipname=filename)
+        zipfile = ZipFile(os.path.join(path, name), mode='w',
+                      compression=ZIP_DEFLATED)
+
+        for proposal in proposals.filter(**kwargs_filters):
+            fullpath = os.path.dirname(proposal.attachments.first().file.path)
+
+            compress_folder_files(fullpath, filename, zipfile)
+
+        is_secure = request.is_secure()
+
+        zipfile.close()
+        
+        # get relative path
+        path = "/".join(path.split(os.sep)[-2:])
+        zipped_file = "{path}/{file}.zip".format(path=path, file=filename)
+        host = request.get_host()
+        if is_secure:
+            return "https://{url}/{path}".format(url=host, path=zipped_file)
+        else:
+            return "http://{url}/{path}".format(url=host, path=zipped_file)
+        
 
 
 class Proposal(models.Model):
@@ -101,28 +146,6 @@ class Proposal(models.Model):
                                     ente=self.ente)
         super(Proposal, self).delete(*args, **kwargs)
 
-    @staticmethod
-    def compress_all_files(request, notice):
-        proposal = Proposal.objects.filter(notice=notice).first()
-
-        if not proposal or not proposal.attachments.first():
-            return None
-
-        fullpath = os.path.dirname(proposal.attachments.first().file.path)
-        fullpath = "/".join(fullpath.split(os.sep)[:-1])
-        path = proposal.attachments.first().file.url
-        path = "/".join(path.split(os.sep)[:-1])
-        filename = path.split(os.sep)[3]
-        path = "/".join(path.split(os.sep)[:-2])
-        compress_all_files(fullpath, filename)
-
-        is_secure = request.is_secure()
-        zipped_file = "{path}/{file}.zip".format(path=path, file=filename)
-        host = request.get_host()
-        if is_secure:
-            return "https://{url}{path}".format(url=host, path=zipped_file)
-        else:
-            return "http://{url}{path}".format(url=host, path=zipped_file)
 
     # XXX: Melhorar esse método
     def compress_files(self, request):
