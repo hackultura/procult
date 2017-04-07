@@ -26,12 +26,16 @@ class ProposalResource(resources.ModelResource):
 
     class Meta:
         model = Proposal
-        fields = ("estado", "numero", "pasta_proposta", "artista", "documento", "projeto",
-                  "criado_em", "enviado_em", "edital", "numero_edital", "genero", "idade", "regiao_administrativa")
-        export_order = ("estado", "numero", "pasta_proposta", "artista","projeto",
-                        "documento", "criado_em", "enviado_em", "edital", "numero_edital", "genero", "idade", "regiao_administrativa")
-        exclude = ("id", "number", "ente", "title",
-                   "status", "created_at", "sended_at", "updated_at", "notice")
+        fields = ("estado", "numero", "pasta_proposta", "artista", "documento",
+                  "projeto", "criado_em", "enviado_em", "edital",
+                  "numero_edital", "genero", "idade", "regiao_administrativa",
+                  "tag")
+        export_order = ("estado", "numero", "pasta_proposta", "artista",
+                        "projeto", "documento", "criado_em", "enviado_em",
+                        "edital", "tag", "numero_edital", "genero", "idade",
+                        "regiao_administrativa")
+        exclude = ("id", "number", "ente", "title", "status", "created_at",
+                   "sended_at", "updated_at", "notice")
 
     def get_queryset(self):
         return Proposal.objects.all()
@@ -61,11 +65,13 @@ class ProposalResource(resources.ModelResource):
         return proposal.title
 
     def dehydrate_criado_em(self, proposal):
-        return proposal.created_at.astimezone(timezone.get_current_timezone()).strftime("%d/%m/%Y %H:%M:%S")
+        return proposal.created_at.astimezone(
+            timezone.get_current_timezone()).strftime("%d/%m/%Y %H:%M:%S")
 
     def dehydrate_enviado_em(self, proposal):
         if proposal.sended_at:
-            return proposal.sended_at.astimezone(timezone.get_current_timezone()).strftime("%d/%m/%Y %H:%M:%S")
+            return proposal.sended_at.astimezone(
+                timezone.get_current_timezone()).strftime("%d/%m/%Y %H:%M:%S")
         else:
             return ""
 
@@ -77,3 +83,6 @@ class ProposalResource(resources.ModelResource):
 
     def dehydrate_regiao_administrativa(self, proposal):
         return proposal.ente.user.verbose_admin_region
+
+    def dehydrate_tag(self, propostal):
+        return proposal.tag.name
