@@ -84,5 +84,5 @@ class ProposalResource(resources.ModelResource):
     def dehydrate_regiao_administrativa(self, proposal):
         return proposal.ente.user.verbose_admin_region
 
-    def dehydrate_tag(self, propostal):
+    def dehydrate_tag(self, proposal):
         return proposal.tag.name
